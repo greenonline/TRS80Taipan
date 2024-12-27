@@ -1,0 +1,147 @@
+FILENAME=Taipan_TRS80-notabs-copy.txt
+
+# Remove 5 spaces at start of line
+sed 's/^ \{5\}//' ${FILENAME} # works
+sed ’s/^\s\{5\}//‘ ${FILENAME} # not work - \s is accepted but does nothing
+sed ’s/^\S\{5\}//‘ ${FILENAME} # not work - \S is accepted but does nothing
+
+# Remove space before line number
+
+sed 's/^ [0-9]\{5\}//‘ ${FILENAME}  # not work - incomplete line
+
+# Remove space before line number, line number and one following space - where line number has 5 digits
+
+sed 's/^ [[:digit:]]\{5\} //'
+sed 's/^ [0-9]\{5\} //'
+
+# However, these do not work
+
+#sed 's/^ [[:digit:]]\+ //' 
+#sed 's/^ [0-9]\+ //'
+#sed 's/^ [0-9]+ //'     # this obviously won’t work as it needs the + to be escaped
+
+# There is no match + “one or more times”
+# Use extended RE instead
+
+sed -E 's/^ [[:digit:]]+ //'
+sed -E 's/^ [0-9]+ //'
+
+# This reinstates the line number
+
+sed 's/^ \([0-9]\{5\}\)1 /\1/‘ # does not work - incomplete line
+sed 's/^ \([0-9]\{5\}\) /\1/‘ # does work
+
+# In the above line, there seems to be a problem with the syntax for the capture group 
+
+# This works
+sed 's,^ [0-9]\{5\} ,,'
+
+# These two don’t
+sed 's,^ \([0-9]\{5\}\)1 ,,'
+sed 's,^ \([0-9]\{5\}\)1 ,\1,'
+
+# nor with backslash, see above
+
+# Using \s not working either
+sed 's/^\s[0-9]\+\s//'
+
+# But that is due to a typo and an extraneous “1”
+sed 's,^ \([0-9]\{5\}\) ,\1,'
+
+# or ERE
+
+sed -E 's,^ ([0-9]{3,5}) ,\1,' # can't use comma
+sed -E 's/^ ([0-9]{3,5}) /\1/' # can't use comma
+
+
+# Better to search for two spaces after line number
+
+sed -E 's/^[[:space:]]([0-9]{3,5})[[:space:]]{2}/\1 /'
+
+# Search for line numbers in one line
+# and reinstate newline before, and one space after, the line number
+
+
+sed -E 's/[[:space:]]([0-9]{3,5})[[:space:]]{2}/\n\1 /' # This doesn’t work
+                                                        # BSD does not support \n
+
+# Remove newlines
+
+tr -d '\n'
+awk 1 ORS=‘’ <filename>
+
+# Remove newlines and replace with space
+
+awk 1 ORS=‘ ‘ <filename>
+
+
+# could replace return characters with a string (unusual chars), then use string with tr to replace with nothing or newlines and formatted line numbers
+
+
+# Errors while pasting
+# Line 220 : [ and }  when pasted, come out as arrows up and left respectively.
+# Line 610 - to the power of” circumflex comes out as right arrow
+# Line 1460 - Line too long to paste(?) and “:GOSUB 94” is missing
+# No lower case in the TRS80
+
+
+
+# Shorter version of line 1460
+# Spaces removed
+
+1460 IF DW > 20000 AND NOT ( FN 
+R(5)) THEN GOSUB 400: PRINT 
+"Bad joss!!": PRINT FN R(3) 
++ 1;" of your bodyguards ha
+ve been killed": PRINT "by c
+utthroats and you have been 
+robbed of all your cash, ";
+T$;"!!": CALL 2512:CA=0:GOSUB 
+300:GOSUB 94
+
+2501 GOSUB 400:IF CA > 25000 AND NOT ( FN R(20)) THEN I = FN R(CA / 1.4):WW = I:GOSUB 600:X = USR (25):PRINT "You've been beaten up and robbed of":PRINT WW$;" in cash, ";T$;"!!":CALL 2512:CA=CA-I: GOSUB 300:GOSUB 94:VTAB 22:HTAB 1:PRINT CE$
+
+
+
+
+# Length of line - rulers
+
+# 64 * 3 + 49
+
+1234567890123456789012345678901234567890123456789012345678901234123456789012345678901234567890123456789012345678901234567890123412345678901234567890123456789012345678901234567890123456789012341234567890123456789012345678901234567890123456789
+
+# 241
+
+1234567890123456789012345678901234567890123456789012345678901234567890123456789012345678901234567890123456789012345678901234567890123456789012345678901234567890123456789012345678901234567890123456789012345678901234567890123456789012345678901
+
+# Line numbers missing space
+
+150, 313, 610, 680, 1050, 1060, 1065, 1140, 1142, 1150, 1160, 1320, 1330, 1350, 1610, 1615, 1630, 1710, 1720, 1910, 2000, 2310, 2520, 2560, 2600, 2622, 2632, 2695, 2698, 3020, 3030, 3120, 3230, 3340, 3350, 5030, 5160, 5310, 5320, 5362, 5450, 5460, 5545, 5555, 5610, 5681, 5683, 5720, 5730, 5880, 10040, 10140, 10250, 10260, 10290, 10310, and 20010
+
+# Commands
+
+# Remove indentation of 5 spaces
+sed 's/^ \{5\}//' Taipan_TRS80-orig-missspace.txt 
+# No newline added - works on file with newlines
+sed -E 's/^ ([0-9]{3,5})  /\1 /' Taipan_TRS80-orig-missspace.txt 
+# No newline detect
+perl -p -e 's/\s(\d{3,5})\s\s/\n$1 /g' Taipan_TRS80-orig-missspace.txt # adds extraneous newline - good for all newlines removed
+perl -p -e 's/\s(\d{3,5})\s\s/$1 /g' Taipan_TRS80-orig-missspace.txt # works on file with newlines
+# Newline detected - not work
+perl -p -e 's/\n\s(\d{3,5})\s\s/\n$1 /g' Taipan_TRS80-orig-missspace.txt # not work
+
+
+
+# Final script
+# Starts on a file with correct double space after line number
+# Remove indent
+sed 's/^ \{5\}//' Taipan_TRS80-orig-missspace.txt > Taipan_TRS80-orig-missspace-indent.txt 
+# Remove newlines
+cat Taipan_TRS80-orig-missspace-indent.txt | tr -d '\n'> Taipan_TRS80-orig-missspace-indent-1line.txt 
+# Add newline and remove spaces either side of line number
+perl -p -e 's/\s(\d{3,5})\s\s/\n$1 /g' Taipan_TRS80-orig-missspace-indent-1line.txt > Taipan_TRS80-orig-missspace-indent-1line-fixed.txt 
+
+# Add newline to end of file?
+echo '\n' >> Taipan_TRS80-orig-missspace-indent-1line-fixed.txt
+# Tidy the 2 digit line numbers - remove second space, and preceding space 
+# and add newline
