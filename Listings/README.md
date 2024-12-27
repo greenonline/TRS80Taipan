@@ -3,16 +3,16 @@ The various stages of the Taipan listing reformatting
 `Taipan_TRS80-orig.txt` is the code verbatim from [Taipan listing](https://taipangame.com/BASIC.txt)
 The other files are: 
 - `Taipan_TRS80-orig-missspace.txt`
-  - The original file with the missing space after line number added
+  - The original file with the missing second spaces *after* line number having been added (manually)
 - `Taipan_TRS80-orig-missspace-indent.txt`
   - The five space indentation is removed
 - `Taipan_TRS80-orig-missspace-indent-1line.txt`
   - The newlines have all been removed
 - `Taipan_TRS80-orig-missspace-indent-1line-fixed.txt`
-  - Newlines, and spacing around line numbers, is fixed
+  - Newlines, and spacing around line numbers, are fixed
 - `Taipan_TRS80-orig-missspace-indent-1line-fixed2.txt`
-  - Lines 10-98 are fixed manually
-  - Long lines are fixed manually
+  - Lines 10-98 are fixed (manually)
+  - Long lines are fixed (manually)
 
 From [Script_Issues.txt](https://github.com/greenonline/TRS80Taipan/blob/main/Listings/TRS80%20Taipan%20script%20issues.txt)
 ```none
