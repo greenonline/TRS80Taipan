@@ -86,8 +86,10 @@ awk 1 ORS=‘ ‘ <filename>
 
 
 
-# Shorter version of line 1460
-# Spaces removed
+# Shorter version of over sized lines
+# - Extraneous spaces removed
+
+## Still with newlines (indentation removed):
 
 1460 IF DW > 20000 AND NOT ( FN 
 R(5)) THEN GOSUB 400: PRINT 
@@ -99,8 +101,19 @@ robbed of all your cash, ";
 T$;"!!": CALL 2512:CA=0:GOSUB 
 300:GOSUB 94
 
+## Newlines removed:
+
+1460 IF DW > 20000 AND NOT ( FN R(5)) THEN GOSUB 400: PRINT "Bad joss!!": PRINT FN R(3) + 1;" of your bodyguards have been killed": PRINT "by cutthroats and you have been robbed of all your cash, ";T$;"!!": CALL 2512:CA=0:GOSUB 300:GOSUB 94
+
 2501 GOSUB 400:IF CA > 25000 AND NOT ( FN R(20)) THEN I = FN R(CA / 1.4):WW = I:GOSUB 600:X = USR (25):PRINT "You've been beaten up and robbed of":PRINT WW$;" in cash, ";T$;"!!":CALL 2512:CA=CA-I: GOSUB 300:GOSUB 94:VTAB 22:HTAB 1:PRINT CE$
 
+3320 GOSUB 400:PRINT "Storm, ";T$;"!!":CALL 2521:GOSUB 94:IF NOT ( FN R(30)) THEN  PRINT:PRINT "   I think we're going down!!":CALL 2521:GOSUB 94:IF FN R(DM / SC * 3) THEN  PRINT:PRINT "We're going down, Taipan!!":CALL 2512:OK=1:GOTO 2698
+
+10062 VTAB 20: HTAB 31: PRINT IV$;CA$;"'ESC'";: FOR I = 1 TO 20:X = USR (0): IF PEEK ( - 16384) <  > 155 THEN NEXT : VTAB 20: HTAB 31: PRINT NV$;CA$ + "'ESC'";: FOR I = 1 TO 20:X =  USR (0): IF PEEK ( - 16384) <  > 155 THEN NEXT:GOTO 10062
+
+10120 VTAB10:HTAB7:PRINTCS$;T$;",":VTAB12:HTAB3:PRINT"What will you name your":VTAB 15:HTAB 13:& 45,22:VTAB 14:HTAB 7:PRINT "Firm: ";CA$;:& 32,27:VTAB14:HTAB13:POKE33,39:CALL2200:POKE33,40:WK$=MID$(WK$,1):IF WK$ = "" THEN CALL2521:GOTO10120
+
+10140 H$ = WK$: PRINT HM$;CS$: VTAB 6: PRINT "Do you want to start . . .": PRINT : PRINT : PRINT "  1) With cash (and a debt)": PRINT:PRINT:PRINT ,">> or <<": PRINT : PRINT : PRINT "  2) With five guns and no cash": PRINT ,"(But no debt!)"
 
 
 
@@ -126,14 +139,14 @@ sed 's/^ \{5\}//' Taipan_TRS80-orig-missspace.txt
 sed -E 's/^ ([0-9]{3,5})  /\1 /' Taipan_TRS80-orig-missspace.txt 
 # No newline detect
 perl -p -e 's/\s(\d{3,5})\s\s/\n$1 /g' Taipan_TRS80-orig-missspace.txt # adds extraneous newline - good for all newlines removed
-perl -p -e 's/\s(\d{3,5})\s\s/$1 /g' Taipan_TRS80-orig-missspace.txt # works on file with newlines
+perl -p -e 's/\s(\d{3,5})\s\s/$1 /g' Taipan_TRS80-orig-missspace.txt # works on file with newlines already
 # Newline detected - not work
 perl -p -e 's/\n\s(\d{3,5})\s\s/\n$1 /g' Taipan_TRS80-orig-missspace.txt # not work
 
 
 
 # Final script
-# Starts on a file with correct double space after line number
+# Starts on a file (Taipan_TRS80-orig-missspace.txt) with correct double space after line number
 # Remove indent
 sed 's/^ \{5\}//' Taipan_TRS80-orig-missspace.txt > Taipan_TRS80-orig-missspace-indent.txt 
 # Remove newlines
@@ -144,4 +157,5 @@ perl -p -e 's/\s(\d{3,5})\s\s/\n$1 /g' Taipan_TRS80-orig-missspace-indent-1line.
 # Add newline to end of file?
 echo '\n' >> Taipan_TRS80-orig-missspace-indent-1line-fixed.txt
 # Tidy the 2 digit line numbers - remove second space, and preceding space 
-# and add newline
+# and add newline preceding line number
+# Filename: Taipan_TRS80-orig-missspace-indent-1line-fixed2.txt

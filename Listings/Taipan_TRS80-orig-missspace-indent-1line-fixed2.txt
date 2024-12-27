@@ -86,6 +86,7 @@
 1430 PRINT : PRINT : PRINT "He won't loan you so much, ";T$;"!": CALL 2518: GOSUB 94: GOTO 1400
 1450 REM 
 1460 IF DW > 20000 AND  NOT ( FN R(5)) THEN  GOSUB 400: PRINT "Bad joss!!": PRINT  FN R(3) + 1;" of your bodyguards have been killed": PRINT "by cutthroats and you have been robbed  of all your cash, ";T$;"!!": CALL 2512:CA = 0: GOSUB 300: GOSUB 94
+1460 IF DW > 20000 AND NOT ( FN R(5)) THEN GOSUB 400: PRINT "Bad joss!!": PRINT FN R(3) + 1;" of your bodyguards have been killed": PRINT "by cutthroats and you have been robbed of all your cash, ";T$;"!!": CALL 2512:CA=0:GOSUB 300:GOSUB 94
 1500 REM 
 1610 I =  INT (1000 +  FN R(1000 * (TI + 5) / 6)) * ( INT (SC / 50) * (DM > 0) + 1): IF CA < I OR  FN R(4) THEN 1700
 1615 W$ =  CHR$ (15) +  CHR$ (15) + "damaged_______" +  CHR$ (15) +  CHR$ (16) + "fine":WW = I: GOSUB 600
@@ -158,6 +159,7 @@
 3300 REM 
 3310 IF  FN R(10) THEN 3350
 3320 GOSUB 400: PRINT "Storm, ";T$;"!!": CALL 2521: GOSUB 94: IF  NOT ( FN R(30)) THEN  PRINT : PRINT "   I think we're going down!!": CALL 2521: GOSUB 94: IF  FN R(DM / SC * 3) THEN  PRINT : PRINT "We're going down, Taipan!!": CALL 2512:OK = 1: GOTO 2698
+3320 GOSUB 400:PRINT "Storm, ";T$;"!!":CALL 2521:GOSUB 94:IF NOT ( FN R(30)) THEN  PRINT:PRINT "   I think we're going down!!":CALL 2521:GOSUB 94:IF FN R(DM / SC * 3) THEN  PRINT:PRINT "We're going down, Taipan!!":CALL 2512:OK=1:GOTO 2698
 3330 PRINT : PRINT "    We made it!!": CALL 2521: GOSUB 94: IF  FN R(3) THEN 3350
 3340 LO =  FN R(7) + 1: ON (LO = D) GOTO 3340: GOSUB 400: PRINT "We've been blown off course": PRINT "to ";LO$(LO):D = LO: GOSUB 94
 3350 LO = D: GOTO 1000
@@ -249,11 +251,14 @@
 10050 POKE  - 16368,0
 10060 FOR I = 1 TO 400:CH% =  PEEK ( - 16384):X =  USR (0): IF CH% < 128 THEN  NEXT 
 10062 VTAB 20: HTAB 31: PRINT IV$;CA$;"'ESC'";: FOR I = 1 TO 20:X =  USR (0): IF  PEEK ( - 16384) <  > 155 THEN  NEXT : VTAB 20: HTAB 31: PRINT NV$;CA$ + "'ESC'";: FOR I = 1 TO 20:X =  USR (0): IF  PEEK ( - 16384) <  > 155 THEN  NEXT : GOTO 10062
+10062 VTAB 20: HTAB 31: PRINT IV$;CA$;"'ESC'";: FOR I = 1 TO 20:X = USR (0): IF PEEK ( - 16384) <  > 155 THEN NEXT : VTAB 20: HTAB 31: PRINT NV$;CA$ + "'ESC'";: FOR I = 1 TO 20:X =  USR (0): IF PEEK ( - 16384) <  > 155 THEN NEXT:GOTO 10062
 10070 POKE 2367,236: POKE  - 16368,0: PRINT NV$;FS$;HM$
 10110 VTAB 8: HTAB 1: PRINT CG$;"[";: & 45,38: PRINT "]";: FOR I = 1 TO 8: PRINT "!"; TAB( 40);"!";: NEXT I: PRINT "<";: & 58,38: PRINT ">";CS$
 10120 VTAB 10: HTAB 7: PRINT CS$;T$;",": VTAB 12: HTAB 3: PRINT "What will you name your": VTAB 15: HTAB 13: & 45,22: VTAB 14: HTAB 7: PRINT "Firm: ";CA$;: & 32,27: VTAB 14: HTAB 13: POKE 33,39: CALL 2200: POKE 33,40:WK$ =  MID$ (WK$,1): IF WK$ = "" THEN  CALL 2521: GOTO 10120
+10120 VTAB10:HTAB7:PRINTCS$;T$;",":VTAB12:HTAB3:PRINT"What will you name your":VTAB 15:HTAB 13:& 45,22:VTAB 14:HTAB 7:PRINT "Firm: ";CA$;:& 32,27:VTAB14:HTAB13:POKE33,39:CALL2200:POKE33,40:WK$=MID$(WK$,1):IF WK$ = "" THEN CALL2521:GOTO10120
 10130 IF  LEN (WK$) > 22 THEN  PRINT : VTAB 18: PRINT IV$;: & 32,42: PRINT "Please limit your Firm's name to 22     characters or less.";: & 32,59: PRINT NV$: CALL 2518: GOSUB 92: VTAB 18: PRINT CE$: GOTO 10120
 10140 H$ = WK$: PRINT HM$;CS$: VTAB 6: PRINT "Do you want to start . . .": PRINT : PRINT : PRINT "  1) With cash (and a debt)": PRINT : PRINT : PRINT ,">> or <<": PRINT : PRINT : PRINT "  2) With five guns and no cash": PRINT ,"(But no debt!)"
+10140 H$ = WK$: PRINT HM$;CS$: VTAB 6: PRINT "Do you want to start . . .": PRINT : PRINT : PRINT "  1) With cash (and a debt)": PRINT:PRINT:PRINT ,">> or <<": PRINT : PRINT : PRINT "  2) With five guns and no cash": PRINT ,"(But no debt!)"
 10150 PRINT : PRINT : PRINT  TAB( 10);" ?";:CH$ = "12": GOSUB 100:MO = 1:YE = 1860:SC = 60:BA = 0:LO = 1:TI = 1:WC = 10000:WS = 0
 10160 IF CH% = 1 THEN DW = 5000:CA = 400:MW = 60:GN = 0:BP = 10
 10170 IF CH% = 2 THEN DW = 0:CA = 0:MW = 10:GN = 5:BP = 7
