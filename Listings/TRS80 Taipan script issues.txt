@@ -31,7 +31,8 @@ sed -E 's/^ [0-9]+ //'
 sed 's/^ \([0-9]\{5\}\)1 /\1/‘ # does not work - incomplete line
 sed 's/^ \([0-9]\{5\}\) /\1/‘ # does work
 
-# In the above line, there seems to be a problem with the syntax for the capture group 
+# In the above line (top), there is a problem with the syntax for the capture group
+# extraneous 1 after the first capture group 
 
 # This works
 sed 's,^ [0-9]\{5\} ,,'
@@ -131,6 +132,18 @@ T$;"!!": CALL 2512:CA=0:GOSUB
 
 150, 313, 610, 680, 1050, 1060, 1065, 1140, 1142, 1150, 1160, 1320, 1330, 1350, 1610, 1615, 1630, 1710, 1720, 1910, 2000, 2310, 2520, 2560, 2600, 2622, 2632, 2695, 2698, 3020, 3030, 3120, 3230, 3340, 3350, 5030, 5160, 5310, 5320, 5362, 5450, 5460, 5545, 5555, 5610, 5681, 5683, 5720, 5730, 5880, 10040, 10140, 10250, 10260, 10290, 10310, and 20010
 
+# Fixing the missing space after line number
+sed "$(printf '%ds/^ \([0-9]\{3,5\}\) / \1  /g;' 680 10250 10260 10290 10310 20010)" Taipan_TRS80-orig-list.txt > Taipan_TRS80-orig-list-missspace.txt  # Not work
+sed 's/^ \(150\|20010\) / \1  /' Taipan_TRS80-orig.txtman # not work BSD
+
+
+# Fixing the missing space after line number, alternative method (looking for a single space) 
+sed 's/^ \([0-9]\{3,5\}\) \(.*\)/ \1  \2/' Taipan_TRS80-orig-list.txt > Taipan_TRS80-orig-list-missspace.txt # not work - adds space to every line
+sed 's/^ \([0-9]\{3,5\}\) \([a-zA-Z0-9]*\)/ \1  \2/' Taipan_TRS80-orig-list.txt > Taipan_TRS80-orig-list-missspace.txt # not work - adds space to every line
+# This ERE works:
+sed -E 's/^ ([0-9]{3,5}) ([a-zA-Z0-9]+)/ \1  \2/' Taipan_TRS80-orig-list.txt > Taipan_TRS80-orig-list-missspace.txt 
+
+
 # Commands
 
 # Remove indentation of 5 spaces
@@ -145,17 +158,546 @@ perl -p -e 's/\n\s(\d{3,5})\s\s/\n$1 /g' Taipan_TRS80-orig-missspace.txt # not w
 
 
 
+#
 # Final script
-# Starts on a file (Taipan_TRS80-orig-missspace.txt) with correct double space after line number
-# Remove indent
-sed 's/^ \{5\}//' Taipan_TRS80-orig-missspace.txt > Taipan_TRS80-orig-missspace-indent.txt 
-# Remove newlines
-cat Taipan_TRS80-orig-missspace-indent.txt | tr -d '\n'> Taipan_TRS80-orig-missspace-indent-1line.txt 
-# Add newline and remove spaces either side of line number
-perl -p -e 's/\s(\d{3,5})\s\s/\n$1 /g' Taipan_TRS80-orig-missspace-indent-1line.txt > Taipan_TRS80-orig-missspace-indent-1line-fixed.txt 
+#
 
-# Add newline to end of file?
-echo '\n' >> Taipan_TRS80-orig-missspace-indent-1line-fixed.txt
+# Remove blank lines, “]LIST” and “]” at the end
+sed '1,3d' Taipan_TRS80-orig.txt | sed '$d'|sed '$d'|sed '$d' > Taipan_TRS80-orig-list.txt
+# or
+sed '1,3d' Taipan_TRS80-orig.txt | tail -r | sed '1,3d' | tail -r > Taipan_TRS80-orig-list.txt
+
+# Requirements: A file (Taipan_TRS80-orig-missspace.txt) with correct double space after line number (strange line numbers that are already fixed)
+
+# Fixing the missing space after line number, alternative method (looking for a single space) 
+sed -E 's/^ ([0-9]{3,5}) ([a-zA-Z0-9]+)/ \1  \2/' Taipan_TRS80-orig-list.txt > Taipan_TRS80-orig-list-missspace.txt 
+
+# Remove 5 space indent
+sed 's/^ \{5\}//' Taipan_TRS80-orig-list-missspace.txt > Taipan_TRS80-orig-list-missspace-indent.txt 
+
+# Remove newlines
+cat Taipan_TRS80-orig-list-missspace-indent.txt | tr -d '\n'> Taipan_TRS80-orig-list-missspace-indent-1line.txt 
+
+# Add newline and remove spaces either side of line number
+perl -p -e 's/\s(\d{3,5})\s\s/\n$1 /g' Taipan_TRS80-orig-list-missspace-indent-1line.txt > Taipan_TRS80-orig-list-missspace-indent-1line-fixed.txt 
+
+# Add newline to end of file? (no longer required?)
+#echo '\n' >> Taipan_TRS80-orig-missspace-indent-1line-fixed.txt
+
 # Tidy the 2 digit line numbers - remove second space, and preceding space 
-# and add newline preceding line number
+# and re-add striped out newline preceding two digit line number
+# 
+# This will work for lines 10-98, as there are no other two digit numbers
+# but it could fail further down the code:
+# *if* there is a two digit number followed by two spaces 
+# - However, there are **not**
+perl -p -e 's/\s(\d{2})\s\s/\n$1 /g' Taipan_TRS80-orig-list-missspace-indent-1line-fixed.txt > Taipan_TRS80-orig-list-missspace-indent-1line-fixed-2dig.txt
+# It is easier to just modify the previous Perl command to accept two digit line numbers
+# Note that the output filename "jumps" "fixed".
+perl -p -e 's/\s(\d{2,5})\s\s/\n$1 /g' Taipan_TRS80-orig-list-missspace-indent-1line.txt > Taipan_TRS80-orig-list-missspace-indent-1line-fixed-2dig.txt
+
+
+# Tidy the 2 digit line numbers - remove second space, and preceding space (done above)
+# and re-add striped out newline preceding two digit line number (done above)
 # Filename: Taipan_TRS80-orig-missspace-indent-1line-fixed2.txt
+# Duplicate longer lines removed
+# Filename: Taipan_TRS80-orig-missspace-indent-1line-fixed3.txt
+
+#
+# As a one liner
+#
+sed '1,3d' Taipan_TRS80-orig.txt | sed '$d'|sed '$d'|sed '$d' | sed -E 's/^ ([0-9]{3,5}) ([a-zA-Z0-9]+)/ \1  \2/' | sed 's/^ \{5\}//' | tr -d '\n' | perl -p -e 's/\s(\d{2,5})\s\s/\n$1 /g'
+
+
+# To automate taipan
+
+# D - destructive
+# ND - non destructive (line can be deleted to revert change)
+# Most edits are non-destructive
+
+# Auto name of character - D
+10120 VTAB10:HTAB7:PRINTCS$;T$;",":VTAB12:HTAB3:PRINT"What will you name your":VTAB 15:HTAB 13:& 45,22:VTAB 14:HTAB 7:PRINT "Firm: ";CA$;:& 32,27:VTAB14:HTAB13:WK$="ME":IF WK$ = "" THEN CALL2521:GOTO10120
+
+
+# Auto name of character (better) - ND
+10115 WK$="ME":GOTO 10130
+
+
+# Auto game start type (1, 2) - D
+10150 PRINT : PRINT : PRINT  TAB( 10);" ?";:CH$ = "12": CH%=2:MO = 1:YE = 1860:SC = 60:BA = 0:LO = 1:TI = 1:WC = 10000:WS = 0
+
+
+# Auto game start type (1, 2) (better) - ND
+10145 MO = 1:YE = 1860:SC = 60:BA = 0:LO = 1:TI = 1:WC = 10000:WS = 0:DW = 0:CA = 0:MW = 10:GN = 5:BP = 7:GOTO 10180
+
+
+# Automate business with money lender - ND
+1305 GOTO 1500
+
+
+# Automate no donation to temple
+# There is no record of a string, partial or otherwise, of “Li Yuen asks … in donation to the temple of Tin Hau, the Sea Goddess. Will you pay?”
+# This must be in machine code, called by CALL from the BASIC code, line ???
+# Could be line 1060. In fact, lines 1040-1060, as 1040 is the conditional for LI not equal to zero (if zero then Li Yuen wants a donation?).
+
+# (Possibly) Bypass being asked for a donation - ND
+1035 GOTO 1120
+
+# Additional notes:
+#
+# Lines - USR(x)
+#
+# 230 USR(1) + USR(2)
+# ...
+# 1060 - USR(10) and USR(11)
+# 1070 USR(12) and USR(13)
+# 1080 USR(14)
+# 1090 USR(15)
+# 1130 USR(16)
+# 1145 USR(17) and USR(18)
+# 1150 USR(19)
+# 1155 USR(12)
+# 1230 USR(20)
+# 1240 USR(21)
+# 1310 USR(22)
+# 1370 USR(23)
+# 1400 USR(24)
+# ...
+# 2522 USR(30)               # Port menu
+# 2524 USR(31) and USR(32)   # Port menu
+# 2526 USR(31) and USR(33)   # Port menu
+# 10060 USR(0)
+# 10062 USR(0)
+
+#
+# Program structure
+#
+
+# 10-99 - 
+# 92-98 (S) - Staggered Delay interruptible by keypress
+# 92 - 2xT
+# 94 - 1xT
+# 96 - T/2
+# 98 - Clear key press
+# 100 (S) - call routine get predefined input (BSQ, and YN or the contents of CH$)
+# 150 - 
+# 200-270 - Main display???
+# 210 - Top line ("Firm")
+# 220 - Draw table outline???
+# 230 - top table (warehouse???) (Titles: In use/Hold/Guns)
+# 240 - Hold Table
+# 250 - Righthand panel (date, ship status) 
+# 300-360 - Top panel???
+# 310  Print date
+# 400/410 - Poke routine???
+# 480 - Poke routine???
+# 490  - Poke routine???
+# 500-590 bank/cash???
+# 600-690 Big number routine
+# 1000-  Port arrival?
+# 1020 - Year end - financial and date adjustments
+# 1030 - Check for Hong Kong
+# 1040 - Hong Kong port arrival stuff
+# 1040-1065 Li Yuen
+# 1070-1090 Money Lender?
+# 1100 (F) - More port arrival stuff
+# 1120-1160 - Repair
+# 1600-1630 - Upgrade ship
+# 1700-1740 - Extra gun
+# 1900-1910 - ???
+# 2000- - ???
+# 2030 - ???
+# 2100 - ???
+# 2310-2330 - Li Yuen activity
+# 2410-2450 - Hike/crash
+# 2500-2600 - Port 
+# 2500 - Port
+# 2501 Robbed
+# 2512 Goods price display
+# 2522-2528 Port menu 
+# 2530 Buy
+# 2570 Sell
+# 2620 Transport to storage
+# 2680 Visit bank
+# 2695 Retire (millionaire???)
+# 2700 Embark
+3100-3120 - Pirates approaching
+3200-3230 - Li Yuen pirates approaching
+3300-3350 - Storm
+5000- - Pirate fight
+5000-5080 - 
+5050 - Ship status
+5090
+5090-5190
+5165 - Did we lose?                (OK=0)
+5180 - Pirates - jump on action
+5200 (F) - Pirates - run
+5210 - Did we get away?            (OK=3)
+5300 (F) - Pirates - fight
+5360 - Some ran away
+5400 (F) - Pirates - Throw
+5500-5590 (F) - End of battle round & calculations
+5505 - Did we win?                 (OK=1)
+5560 - Did Li Yuen drive them off? (OK=2)
+5600-5670 (S) - Handle battle input (Run, Fight, Throw)
+5700-5740 (S)
+5750-5770 (S)
+5800 (S) - 
+5820 (S) - 
+5840 (S) - 
+5860 (S) - 
+5880 (S) -  
+5900 (F) - End of battle (we may have lost or won) (OK set?)
+5910 - We lost                     (OK=0)
+5920 - We won                      (OK=1)
+5930 - Li Yuen drove them off      (OK=2)
+5940 - We made it                  (OK=3)
+10000 - Start of game
+10120 - Name of character 
+10140 - type of game
+10150 - Variable initialisation
+#
+# Missing strings
+# correlates with USR(x)???
+#
+
+Comprador's report
+Captains report
+Li Yuen asks xxx in donation to the temple of Tin Tau, the Sea Goddess. Will you pay?
+Li Yuen has sent a lieutenant, Taipan. He says his admiral wishes to see you in Hong Kong, posthaste!
+"visit":
+ - Visit bank
+What do you wish to do? Buy/Sell/Quit etc.
+Repair ship related to USR(16-19) and USR(12)? lines 1120-1160
+
+# Small reused strings set in line 10040
+10040 HM$ =  CHR$ (16):CS$ =  CHR$ (1) + "0":CA$ =  CHR$ (1) + "1":CG$ =  CHR$ (1) + "2":BD$ =  CHR$ (2):CD$ =  CHR$ (3):DD$ =  CHR$ (4):IV$ =  CHR$ (9):NV$ =  CHR$ (14):FS$ =  CHR$ (25):CE$ =  CHR$ (6):CL$ =  CHR$ (5)
+ 
+from appl2.org/faq/FAQ.applesoft.html
+0 - NULL
+1 ctrl-A does nothing 
+2 BD$
+3 CD$
+4 ctrl-D DD$
+5 CL$
+6   CE$
+7 BELL
+9 IV$
+14 NV$
+16  HM$
+25 FS$
+
+# Automate no repair ship - ND
+# Line 1120 seems to be the conditional, for lines 1120-1160, the repair code, bypass with
+1125 GOTO 1210
+
+
+# Auto upgrade - D
+1630 CA = CA - I:MW = MW + 50:SC = SC + 50:DM = 0: GOSUB 300
+
+# Auto upgrade (better as non-destructive) - ND
+# But 1630 is still run and waits for input
+1629 CA = CA - I:MW = MW + 50:SC = SC + 50:DM = 0: GOSUB 300
+
+# Auto upgrade (even better) - ND
+1629 CA = CA - I:MW = MW + 50:SC = SC + 50:DM = 0: GOSUB 300: GOTO 1700
+
+
+# Auto extra gun - D
+1720 WW = I: GOSUB 600: GOSUB 400: PRINT "Do you wish to buy a ship's gun": PRINT "for ";WW$;", ";T$;"? ";:CH$ = "NY": 
+
+# Auto extra gun (better) - ND
+1715 WW = I: GOTO 1730
+
+
+# Automates Quit trading - D
+# Note: 2700 Is the embarking routine, and is only called by 2528
+2528 GOTO 2700
+
+# Automates Quit trading - ND
+2527 GOTO 2700
+
+# Automates destination (2 or 7) - ND
+3015 IF LO=7 OR LO =2 THEN D = ABS(LO-9):GOTO 3030
+# and
+3016 IFLO=1 THEN D=2:GOTO 3030
+# or
+3016 IFLO<>2 AND LO<>7 THEN D=2:GOTO 3030
+
+# Auto fight - D
+# However, this prevents orders being displayed
+5180 GOTO 5300
+
+# Auto fight (better) - ND
+5605 W=198:GOTO 5620
+
+# Auto run if no guns - D
+# Action might not be displayed (as with auto fight)
+5302 IF GN = 0 THEN  VTAB 4: HTAB 1: PRINT "We have no guns, ";T$;"!!":  GOTO 5200
+
+# Auto run if no guns (better) - ND
+5604 IF GN = 0 THEN  W=210:GOTO 5620
+
+# Auto play again - D
+2699 RUN 
+
+# Auto play again - Less D
+# Less destructive, but changes an existing line by appending RUN
+2698 GOSUB 20000: RUN
+
+
+# Log scores - ND
+20005 PR#1
+20195 PR#0
+
+
+# Automate buy low - ND
+2435 IF J=0 THEN W = MW:IF CA > W * CP THEN CA = CA - W * CP:ST(2,I) = ST(2,I) + W: MW = MW - W
+2437 IF J=0 THEN IF CA < MW * CP THEN W = CA / CP :IF CA > W * CP THEN CA = CA - W * CP:ST(2,I) = ST(2,I) + W : MW = MW - W
+# Better still
+2435 IF J=0 AND CA >= MW * CP THEN W = MW : CA = CA - W * CP:ST(2,I) = ST(2,I) + W : MW = MW - W
+2437 IF J=0 AND CA < MW * CP THEN W = CA / CP : CA = CA - W * CP:ST(2,I) = ST(2,I) + W : MW = MW - W
+
+# Automate sell high - ND
+2445 IF J=1  AND ST(2,I) THEN W = ST(2,I): CA = W * CP : ST(2,I) = 0: MW = MW + W
+
+# Max guns - ND
+3012 IF GN > MG THEN MG = GN
+10143 MG = 0
+29925 PRINT "Max guns: ";MC
+
+# Max cash - ND
+335 IF CA > MC THEN MC = CA
+10144 MC = 0
+29927 PRINT "Max cash: ";MC
+
+# Max cash (better) - ND
+335 IF CA > MC THEN MC = CA
+10143 MG = 0: MC=0
+29927 PRINT "Max cash: ";MC
+
+# Hikes and crashes - ND
+10144 DIM MM(2,4)
+2432 IF J = 0 THEN MM(1,I) = CP(I)
+2442 IF J = 1 THEN MM(2,I) = CP(I)
+20029 FOR I = 1 TO 4: PRINT  TAB( 4); LEFT$ (CO$(I),7);"Min: ";MM(1,I); TAB( 18);"Max: ";MM(2,I): NEXT I
+
+# Maximum number of pirates
+5005 IF SN > MP THEN MP = SN
+10143 MG=0:MC=0:MP=0
+20028 PRINT "Max pirates: ";MP
+
+# Auto bank half of the cash
+# TBA???
+
+# Records - ND
+
+10143 DIM RE(2,4)
+# or
+10144 DIM RE(2,4,7) : DIM MM(2,4)
+2516 FOR I=1 TO 4: IF CP(I)>RE(2,I) THEN RE(2,I)=CP(I)
+2517 IF CP(I)<RE(1,I) THEN RE(1,I)=CP(I)
+2518 NEXT I
+#20028 FOR I = 1 TO 4: PRINT  TAB( 4); LEFT$ (CO$(I),7);"Min: ";RE(1,I); TAB( 18);"Max: ";RE(2,I): NEXT I
+
+2522 IF LO<>1 THEN X = USR(30):CH$="PBSQ"
+2524 IF LO=1 AND I<1E6 THEN X=USR(31)+USR(32):CH$="PBSQTV"
+2526 IF LO=1 AND I>1E6 THEN X=USR(31)+USR(33):CH$="PBSQTVR"
+2528 GOSUB 100: ON CH% GOTO 3000,2530,2570,2700,2620,2695
+3000 REM
+3090 RETURN
+
+# Parley (SD)
+5645 IF W = 208 THEN CMD = 4: PRINT "Parley     "
+5180 ON CMD GOTO 5200,5300,5400,6000
+6000 REM PARLEY
+6090 goto 5500 *like line 5500*
+
+# More guns (ND)- not working due to previous ND hack 10145 which skips these lines
+10175 GN = 4
+10175 GN = 6
+10175 GN = 6:MW=0
+10175 GN = 10:MW = 100: SC=100
+10175 GN = 100: MW=1000:SC=1000
+# works (ND):
+10145 MO = 1:YE = 1860:SC = 60:BA = 0:LO = 1:TI = 1:WC = 10000:WS = 0:DW = 0:CA = 0:MW = 10:GN = 50:BP = 7:GOTO 10180
+However, a weird unbalance occurs. You shouldn't be able to buy new gun until ship hold is 500. However, the guns increased in number almost straight from the start...
+So here is a bug in the calculation of if can support a new gun, or is it due to the MW being incorrect and should be 0?
+Hold-Guns
+10-50
+50-51
+40-52
+30-53
+40/90-52
+70-54
+120-54
+110-55
+100-56
+140-57
+150-56
+
+and
+
+270-54
+260-55
+250-56
+290-57
+330-58
+370-59
+410/460-60
+470-59
+480-63
+490-62
+4??-64
+500/550-61
+540-62
+
+# The initial conditions (SX, MW and GN) need to be correct and accurate 
+# as there are no further checks  to their ratios made.
+# A more correct line would be to set MW to 0 (ND)
+
+10145 MO = 1:YE = 1860:SC = 60:BA = 0:LO = 1:TI = 1:WC = 10000:WS = 0:DW = 0:CA = 0:MW = 0:GN = 50:BP = 7:GOTO 10180
+
+# This stops guns purchase until ship is upgraded and have MW>=0. 
+# However, the SC will always be incorrect (too small for the total weight of guns)
+
+# The correct way is to state GN and MW and then, finally, calculate SC in line 10171 (from 10150) 
+# Destructive hack (D)
+10150 PRINT : PRINT : PRINT  TAB( 10);" ?";:CH$ = "12": GOSUB 100:MO = 1:YE = 1860:BA = 0:LO = 1:TI = 1:WC = 10000:WS = 0
+10160 IF CH% = 1 THEN DW = 5000:CA = 400:MW = 60:GN = 0:BP = 10
+10170 IF CH% = 2 THEN DW = 0:CA = 0:MW = 10:GN = 5:BP = 7
+10171 SC=MW+GN*10
+
+# or the hack 10145 (ND)
+10145 MO = 1:YE = 1860:GN=50 : MW= 10:SC = 10*GN+MW:BA = 0:LO = 1:TI = 1:WC = 10000:WS = 0:DW = 0:CA = 0:BP = 7:GOTO 10180
+
+#
+# BASIC mod for SC/MW/GN consistency
+#
+
+# The BASIC check is on the MW and not the SC. If there is a MW>=10 then you can still buy another gun. Maybe add a check at purchase time for additional overburdening
+
+# Need to check for goods carried too?
+# 
+# Method 1: Adjust MW
+#
+IF SC < MW + GN*10 THEN PRINT "Ship is over burdened"
+REM Attempt to fix MW?
+REM MW=SC-GN*10
+REM Just notify user
+REM IF MW<0 THEN OV=-MW/10: MV = 0 : PRINT OV;" guns too many"
+REM Fix the guns too, by throwing overboard
+REM IF MW<0 THEN OV=-MW/10: MV = 0 : PRINT OV;" guns too manny - thrown overboard" :  GN = GN - OV
+#
+# Method 2: Toss the excess guns, ignore MW (could set to zero)
+#
+IF SC < GN*10 THEN PRINT "Ship has too many guns"
+REM Calculate the guns weight only
+REM OV = SC-GN*10 
+REM Just notify user
+REM IF OV < 0 THEN OV =-OV/10: PRINT OV;" guns too many"
+REM Fix the guns too, by throwing overboard
+REM IF OV < 0 THEN OV =-OV/10: PRINT OV;" guns too many - thrown overboard" :  GN = GN - OV
+
+# However, if the SC is set correctly at initialisation then this extra complexity really isn't required!
+
+
+
+#
+# Delay:
+#
+# GOSUB 95 (5920), CALL 2518 (5920),2512 (elsewhere), CALL 2521 (3320), GOSUB 94 (3320) 94 (2330)
+#
+# GOSUB 92-98 (2T, T, T/2)
+
+#
+# CALL
+# 53 total
+#
+# 2200 General input (put into WK$ (partially?))
+# 2224 Ship sink
+# 2368 Ship flash???
+# 2512 (four beeps)
+# 2518 (three beeps)
+# 2521 (two beeps)
+# 2524 (one simple beep)
+# 2560 QBS only input (YN or contents of CH$)
+# 2680 Numeric input (put into ???)
+# 6147 ?
+
+#
+# Missing strings!!!
+#
+# Note some of the text printed is missing :
+#  - repair
+#  - wu/money lender
+#  - Yuen/donation
+
+#
+# CALL
+#
+#
+
+#
+# POKES
+#35 total
+#
+# 98 POKE -16368,0 Clear key press
+# 320 POKE 33 Width of text window
+# 410 POKE 32-35 Margins: left margin, width of text, top margin, bottom margin
+# 5540 POKE -16297 - -16300 HiRes, LoRes, HiRes1->2, HiRes 2->1
+# 5840 POKE 2493,(Y + 4) * 8 - 1: POKE 2494,X - 1: ????
+# 5860 POKE 2361,(Y + 4) * 8 - 1: POKE 2362,X - 1: POKE 2300, FN R( FN R(192)) ????
+# 10010 POKE 1013,76: POKE 1014,224: POKE 1015,9:  Ampersand vector to what? POKE?
+POKE 10,76: POKE 11,16: POKE 12,11: Poking USR jump instructions
+POKE 1010,102: POKE 1011,213: POKE 1012,112 Makes RESET RUN
+# 10070 POKE 2367,236   A flag?
+
+#
+# & (POKE?)
+# 12 total
+#
+# 10110 VTAB 8: HTAB 1: PRINT CG$;"[";: & 45,38: PRINT "]";: FOR I = 1 TO 8: PRINT "!"; TAB( 40);"!";: NEXT I: PRINT "<";: & 58,38: PRINT ">";CS$
+# 10120 & 45,22: Last lo-res VLIN bottom endpoint
+# 10120 & 32,27: 
+# 10120 POKE 33,39: CALL 2200 POKE 33,40
+10130 IF  LEN (WK$) > 22 THEN  PRINT : VTAB 18: PRINT IV$;: & 32,42: PRINT "Please limit your Firm's name to 22     characters or less.";: & 32,59:
+20040 VTAB 14: PRINT "Your Rating:": PRINT CG$;"[";: & 45,31: PRINT "]": FOR I = 1 TO 5: PRINT "!";: HTAB 33: PRINT "!": NEXT I: PRINT "<";: & 58,31: PRINT ">";CS$: VTAB 16
+220 VTAB 2: PRINT CG$;"[";: & 45,26: PRINT "]": FOR II = 1 TO 5: PRINT "!"; TAB( 28);"!": NEXT II: PRINT "(";: & 61,26: PRINT ")": FOR II = 1 TO 5: PRINT "!"; TAB( 28);"!": NEXT II: PRINT "<";: & 58,26: PRINT ">";CS$
+260 VTAB 16: HTAB 1: PRINT CG$;: & 45,40: PRINT CS$
+
+
+
+#
+# PEEKS
+# 9 total
+#
+# 92 PEEK ( - 16384) Check for key press
+# 94 PEEK ( - 16384) Check for key press
+# 96 PEEK ( - 16384) Check for key press
+# 314 PEEK(36)  Horizontal cursor position
+# 5610 W =  PEEK ( - 16384) Check for key press
+# 10045 IF  PEEK (2367) = 236  A flag?
+
+#
+# Self Playing Hack
+#
+# BASIC code only
+#
+
+1035 GOTO 1120
+1125 GOTO 1210
+1305 GOTO 1500
+1629 CA = CA - I:MW = MW + 50:SC = SC + 50:DM = 0: GOSUB 300: GOTO 1700
+1715 WW = I: GOTO 1730
+2527 GOTO 2700
+2699 RUN 
+3015 IF LO=7 OR LO =2 THEN D = ABS(LO-9):GOTO 3030
+3016 IFLO<>2 AND LO<>7 THEN D=2:GOTO 3030
+5604 IF GN = 0 THEN  W=210:GOTO 5620
+5605 W=198:GOTO 5620
+20005 PR#1
+20195 PR#0
+10115 WK$="ME":GOTO 10130
+10145 MO = 1:YE = 1860:SC = 60:BA = 0:LO = 1:TI = 1:WC = 10000:WS = 0:DW = 0:CA = 0:MW = 10:GN = 5:BP = 7:GOTO 10180
+
