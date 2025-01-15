@@ -1,0 +1,58 @@
+     
+]LIST
+
+ 10  TEXT : HOME : NORMAL 
+ 62500 D$ =  CHR$ (4)
+ 62502  PRINT ""
+ 62505  TEXT : HOME : NORMAL : PRINT 
+     D$;"CATALOG":B =  PEEK (27) - 
+     2: IF B > 22 THEN B = 22
+ 62510 T = 0:CH = 4: FOR CV = 0 TO 
+     23: GOSUB 62640: IF C <  > 1
+     60 THEN  POKE P - 1,219: POKE 
+     P,T + 193: POKE P + 1,221:T = 
+     T + 1:S = CV
+ 62520  NEXT CV: VTAB 24:A$ = "TY
+     PE LETTER TO RUN, OR LOAD=1 
+     LOCK=2 UNLOCK=3 DELETE=4 EXI
+     T=5...."
+ 62530 B$ = "RUN": HTAB 1: PRINT 
+      LEFT$ (A$,39);:A$ =  MID$ (
+     A$,2) +  LEFT$ (A$,1):K =  PEEK 
+     ( - 16384): IF K < 128 THEN 
+      FOR K = 1 TO 75: NEXT K:K = 
+      FRE (0): GOTO 62530
+ 62540  POKE  - 16368,0:K = K - 1
+     76: IF K < 1 OR K > 5 THEN 6
+     2610
+ 62550  HTAB 1: CALL  - 868: IF K
+      = 5 THEN  END 
+ 62560  PRINT " PRESS 'LETTER' YO
+     U WISH TO ";: IF K = 1 THEN 
+     B$ = "LOAD"
+ 62570  IF K = 2 THEN B$ = "LOCK"
+     
+ 62580  IF K = 3 THEN B$ = "UNLOC
+     K"
+ 62590  IF K = 4 THEN B$ = "DELET
+     E": FLASH 
+ 62600  PRINT B$;: CALL  - 198: NORMAL 
+     : GET K$:K =  ASC (K$) - 48
+ 62610  IF K < 17 OR K > T + 16 THEN 
+     62530
+ 62620 CH = 1:CV = S - T + K - 16
+     : GOSUB 62640: IF C = 194 AND 
+     (B$ = "RUN" OR B$ = "LOAD") THEN 
+     B$ = "B" + B$
+ 62630  FOR CH = 6 TO 39: GOSUB 6
+     2640:B$ = B$ +  CHR$ (C): NEXT 
+     CH: HTAB 1: CALL  - 868: PRINT 
+     B$: PRINT D$;B$: GOTO 62500
+ 62640 C1 =  INT (CV / 8):C2 = CV
+      - C1 * 8:P = 1024 + 128 * C
+     2 + 40 * C1 + CH:C =  PEEK (
+     P): RETURN 
+
+]
+
+]
