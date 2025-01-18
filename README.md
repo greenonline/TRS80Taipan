@@ -13,11 +13,11 @@ Massaging the [original BASIC source code](https://taipangame.com/BASIC.txt) fro
 This reprository contains:
  - A set of scripts to do the massaging.
  - A considerable number of hacks and mods to the BASIC code:
-   - to add new features
+   - To add new features:
      - "Records"
-     -  "Parley" 
-     - additional data logging), 
-   - to make a self-playing game.
+     - "Parley" 
+     - Additional data logging
+   - To make a self-playing game
  - A breakdown of the code - including CALLS, POKEs, PEEKs and USR statements.
  - Some media (cassette/disk) containing the code
 
