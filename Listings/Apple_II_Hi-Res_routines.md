@@ -1,4 +1,4 @@
-# TAIPAN (hiRes version) for APPLE II DISASSEMBLY
+# TAIPAN (Hi-Res version) for APPLE II - DISASSEMBLY
 
 ## LINKS
 http://forum.6502.org/viewtopic.php?f=3&t=5517
@@ -18,38 +18,38 @@ https://downloads.reactivemicro.com/Users/Grant_Stockley/Apple2WozMiniAssembler.
 [](https://www.masswerk.at/6502/disassembler.html)
 
 ### For ROM hooks, 
-#### $DB5C (OUTDO), $DD7B (FRMEVL): 
+#### `$DB5C` (`OUTDO`), `$DD7B` (`FRMEVL`): 
 [Apple IIc and II e Assembly Language](http://www.apple-iigs.info/doc/fichiers/Apple%20IIc%20and%20IIe%20Assembly%20Language%20(Jules%20H.%20Gilder).pdf)
 
-#### $E6FB (CONINT) and $DEBE (CHKCOM):
+#### `$E6FB` (`CONINT`) and `$DEBE` (`CHKCOM`):
 [Inside the Apple II e](https://fabiensanglard.net/fd_proxy/prince_of_persia/Inside%20the%20Apple%20IIe.pdf)
 
 
 ## HOW TO DISASSEMBLE PRE-LOADED CODE
 Instead of trying to find an AppleSoft compatible disassembler that can load non-destructively, once the code to be disassembled has been loaded, just use the built in monitor ([CALL -151](https://stackoverflow.com/q/143374/4424636)) to get the hex dump and then use an [online disassembler](https://www.masswerk.at/6502/disassembler.html) to get the assembler code.
 
-Enter 3D0G to return to BASIC
+Enter `3D0G` to return to BASIC
 
 ## CODE
 
-Note: The end of a subroutine will be denoted by 0x60 [RTS](https://www.masswerk.at/6502/6502_instruction_set.html#RTS)
+Note: The end of a subroutine will be denoted by `0x60` [RTS](https://www.masswerk.at/6502/6502_instruction_set.html#RTS)
 
 ## CALLS TO BE INVESTIGATED
 
-- 2200 (0x0898) General input (put into WK$ (partially?))
-- 2224 (0x08B0) Ship sink
-- 2368 (0x0940) Ship flash??? And damage animation???
-- 2512 (0x09D0) Sound (four beeps)
-- 2518 (0x09D6) Sound (three beeps)
-- 2521 (0x09D9) Sound (two beeps)
-- 2524 (0x09DC) Sound (one simple beep)
-- 2560 (0x0A00) Selective input ("QBS"/"YN"/ETC. or contents of CH$)
-- 2680 (0x0A78) Numeric input (put into WK$ apparently, see line 150)
+- 2200 (`0x0898`) General input (put into `WK$` (partially?))
+- 2224 (`0x08B0`) Ship sink
+- 2368 (`0x0940`) Ship flash and damage animation???
+- 2512 (`0x09D0`) Sound (four beeps)
+- 2518 (`0x09D6`) Sound (three beeps)
+- 2521 (`0x09D9`) Sound (two beeps)
+- 2524 (`0x09DC`) Sound (one simple beep)
+- 2560 (`0x0A00`) Selective input ("QBS"/"YN"/Etc., in other words, the contents of `CH$`)
+- 2680 (`0x0A78`) Numeric input (put into `WK$` apparently, see line 150)
 
 
 
 ### GENERAL INPUT
-`CALL 2200` `0x0898`
+`CALL 2200` (`0x0898`)
 #### Raw
 ```none
 A2002075FDA0028A
@@ -85,9 +85,9 @@ A902916960000000
 
 
 ### SHIP SINK
-`CALL 2224` `0x08B0`
+`CALL 2224` (`0x08B0`)
 
-Does not include JSR from 0x08B0 to 0x0910
+Does not include `JSR` from `0x08B0` to `0x0910`.
 
 
 #### Raw
@@ -178,7 +178,7 @@ DOBA68A868AA6860
 ```
 
 ### SHIP SINK RELATED?????
-`(CALL 2320)` `0x0910`
+`(CALL 2320)` (`0x0910`)
 
 #### Raw
 ```none
@@ -236,12 +236,11 @@ DOBA68A868AA6860
 ```
 
 ### SHIP SINK and SHIP SINK RELATED
+Combined:
+- `CALL 2224` (`0x08B0`), and;
+- (`CALL 2320`) (`0x0910`)
 
-`CALL 2224` `0x08B0`
-And
-(`CALL 2320`) `0x0910`
-
-Includes JSR from 0x08B0 to 0x0910
+Includes `JSR` from `0x08B0` to `0x0910`.
 
 
 #### Raw
@@ -378,7 +377,7 @@ DOBA68A868AA6860
 
 
 ### SHIP FLASH
-`CALL 2368` `0x0940`
+`CALL 2368` (`0x0940`)
 
 #### Raw
 ```none
@@ -517,7 +516,7 @@ BE09852660570857
 
 
 ### FOUR BEEP
-`CALL 2512` `0x09D0`
+`CALL 2512` (`0x09D0`)
 
 #### Raw
 ```none
@@ -542,7 +541,7 @@ BE09852660570857
 ```
 
 ### THREE BEEP
-`CALL 2518` `0x09D6`
+`CALL 2518` (`0x09D6`)
 
 #### Raw
 ```none
@@ -565,7 +564,7 @@ BE09852660570857
 ```
 
 ### TWO BEEP
-`CALL 2521` `0x09D9`
+`CALL 2521` (`0x09D9`)
 
 #### Raw
 ```none
@@ -586,7 +585,7 @@ BE09852660570857
 
 
 ### SINGLE BEEP
-`CALL 2524` `0x09DC`
+`CALL 2524` (`0x09DC`)
 
 #### Raw
 ```none
@@ -605,7 +604,7 @@ BE09852660570857
 ```
 
 ### ?????
-`2528` `0x09E0` (could be nothing)
+`2528` (`0x09E0`) (could be nothing)
 
 #### Raw
 ```none
@@ -649,7 +648,7 @@ E668205CDBCAD0FA
 ```
 
 ### SELECTIVE INPUT
-`CALL 2560` `0x0A00`
+`CALL 2560` (`0x0A00`)
 
 #### Raw
 ```none
@@ -759,7 +758,7 @@ A988205CDBA9A020
 ```
 
 ### NUMERIC INPUT
-`CALL 2680` `0x0A78`
+`CALL 2680` (`0x0A78`)
 
 #### Raw
 ```none
@@ -895,11 +894,11 @@ C84C000B60000000
 
 ### Sound routines
 
-0838 - One beep (CALL 2104)
-083D - Two beep (CALL 2109)
-0842 - Three beep (CALL 2114)
-0847 - Four beep (CALL 2119)
-084C - Four beep (CALL 2124)
+- `0838` - One beep (CALL 2104)
+- `083D` - Two beep (CALL 2109)
+- `0842` - Three beep (CALL 2114)
+- `0847` - Four beep (CALL 2119)
+- `084C` - Four beep (CALL 2124)
 
 #### Raw
 ```none
@@ -993,6 +992,6 @@ FF0A000609080706
       - Line 5880???
     - What determines the speed of sinking for CALL
   - CALL 2368 (Ship flash and damage animation???)
-    - what determines which ship (screen location)
+    - What determines which ship (screen location)
       - Line 5880???
-    - what determines how much damage
+    - What determines how much damage
