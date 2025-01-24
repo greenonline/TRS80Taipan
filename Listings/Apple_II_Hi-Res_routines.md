@@ -1,14 +1,17 @@
 # TAIPAN (Hi-Res version) for APPLE II - DISASSEMBLY
 
 ## LINKS
-http://forum.6502.org/viewtopic.php?f=3&t=5517
 
-White flame?
+### General
 
-https://groups.google.com/g/comp.sys.apple2/c/SBBdH1ChMwQ
+- [forum - reverse engineering Robotron 2084 for the Apple II](http://forum.6502.org/viewtopic.php?f=3&t=5517) mentions (online?) dissembler "White flame"?
+- [group - 6502bench SourceGen disassembler updated](https://groups.google.com/g/comp.sys.apple2/c/SBBdH1ChMwQ) mentions the Mini-Assembler and Disambler
 
-Mini-Assembler/Disassembler.
-https://downloads.reactivemicro.com/Users/Grant_Stockley/Apple2WozMiniAssembler.pdf
+### Mini-Assembler/Disassembler
+
+- [Disk - `MINIASSM.SHK`](https://mirrors.apple2.org.za/ftp.apple.asimov.net/images/programming/assembler/MINIASSM.SHK) from [mirrors - ftp apple2](https://mirrors.apple2.org.za/ftp.apple.asimov.net/images/programming/assembler/)
+- [Manual - PDF](https://downloads.reactivemicro.com/Users/Grant_Stockley/Apple2WozMiniAssembler.pdf)
+
 ### Stack Exchange
 [CALL -151 What did it do on the APPLE \]\[](https://stackoverflow.com/q/143374/4424636)
 ### Monitor
@@ -17,7 +20,7 @@ https://downloads.reactivemicro.com/Users/Grant_Stockley/Apple2WozMiniAssembler.
 
 [](https://www.masswerk.at/6502/disassembler.html)
 
-### For ROM hooks, 
+### For ROM hooks
 #### `$DB5C` (`OUTDO`), `$DD7B` (`FRMEVL`): 
 [Apple IIc and II e Assembly Language](http://www.apple-iigs.info/doc/fichiers/Apple%20IIc%20and%20IIe%20Assembly%20Language%20(Jules%20H.%20Gilder).pdf)
 
