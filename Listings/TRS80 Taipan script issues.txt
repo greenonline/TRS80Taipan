@@ -195,6 +195,9 @@ perl -p -e 's/\s(\d{2})\s\s/\n$1 /g' Taipan_TRS80-orig-list-missspace-indent-1li
 # It is easier to just modify the previous Perl command to accept two digit line numbers
 # Note that the output filename "jumps" "fixed".
 perl -p -e 's/\s(\d{2,5})\s\s/\n$1 /g' Taipan_TRS80-orig-list-missspace-indent-1line.txt > Taipan_TRS80-orig-list-missspace-indent-1line-fixed-2dig.txt
+# Note that both of these commands (2 digit and 2-5 digit) add an extraneous line to the beginning of the code, due to a newline inserted before line 10, so trim with
+sed '1d' 
+
 
 
 # Tidy the 2 digit line numbers - remove second space, and preceding space (done above)
@@ -206,10 +209,12 @@ perl -p -e 's/\s(\d{2,5})\s\s/\n$1 /g' Taipan_TRS80-orig-list-missspace-indent-1
 #
 # As a one liner
 #
-sed '1,3d' Taipan_TRS80-orig.txt | sed '$d'|sed '$d'|sed '$d' | sed -E 's/^ ([0-9]{3,5}) ([a-zA-Z0-9]+)/ \1  \2/' | sed 's/^ \{5\}//' | tr -d '\n' | perl -p -e 's/\s(\d{2,5})\s\s/\n$1 /g'
+sed '1,3d' Taipan_TRS80-orig.txt | sed '$d'|sed '$d'|sed '$d' | sed -E 's/^ ([0-9]{3,5}) ([a-zA-Z0-9]+)/ \1  \2/' | sed 's/^ \{5\}//' | tr -d '\n' | perl -p -e 's/\s(\d{2,5})\s\s/\n$1 /g' | sed '1d'
 
 
+#
 # To automate taipan
+#
 
 # D - destructive
 # ND - non destructive (line can be deleted to revert change)
@@ -491,6 +496,60 @@ sed '1,3d' Taipan_TRS80-orig.txt | sed '$d'|sed '$d'|sed '$d' | sed -E 's/^ ([0-
 3720 PRINT FS$;HM$: FOR I=1 TO 7: VTAB (I) + 4:PRINT A$:VTAB (I) + 4: PRINT I;" ";LO$(I);:NEXT I:PRINT
 3721 PRINT "       WHICH PORT (1-7)?             ": PRINT:INVERSE: PRINT A$: NORMAL: RETURN
 
+#
+# Single key press - which item and which port
+#
+# Subsequent edits
+#
+
+3610 GOSUB 5685:IF W=208 THEN GOSUB 3720: GOTO 3620
+3611 IF W = 201 THEN PRINT: VTAB 5:PRINT A$;: PRINT A$: GOSUB 3660: GOTO 3670
+3612 IF W = 160 THEN HOME:GOSUB 200: GOSUB 300: GOTO2510
+3613 GOTO 3610
+
+3620  GOSUB 5696
+
+3660 VTAB 5:FOR I = 1 TO 4:PRINT " ";CO$(I),:NEXT I:PRINT:PRINT " WHAT ITEM, ";T$; "?": PRINT:PRINT A$: INVERSE: PRINT A$: NORMAL:GOSUB 5690: RETURN
+
+3710 GOSUB 5685:IF W = 160 THEN 3600
+
+
+5685 REM WHICH KEY 
+5686 VTAB 2: HTAB 21: FOR II = 1 TO T / 2 
+5687 W = PEEK ( - 16384): IF W < 128 THEN NEXT II: PRINT : GOTO 5686 
+5688 POKE - 16368,0: PRINT :RETURN[/code]
+
+5690 REM WHICH ITEM?
+5691 GOSUB 5686
+5691 IF W = 206 THEN X1 = 1:GOTO 5696
+5692 IF W = 211 THEN X1 = 2:GOTO 5696
+5693 IF W = 193 THEN X1 = 3:GOTO 5696
+5694 IF W = 199 THEN X1 = 4:GOTO 5696
+5695 CALL 2524: GOTO 5690
+5696 RETURN
+
+5690 REM WHICH ITEM?
+5691 GOSUB 5686
+5691 IF W = 206 THEN X1 = 1:RETURN
+5692 IF W = 211 THEN X1 = 2: RETURN
+5693 IF W = 193 THEN X1 = 3: RETURN
+5694 IF W = 199 THEN X1 = 4: RETURN
+5695 CALL 2524: GOTO 5690
+
+
+
+5696 REM WHICH PORT (1-7)? Not (0-9)
+5697 GOSUB 5686
+5698 IF W < 176 OR W > 185 THEN CALL 2524: GOTO 5697
+5698 IF W < 177 OR W > 183 THEN CALL 2524: GOTO 5697
+5699 X = W - 176 : RETURN
+5699 X = W - 177 : RETURN
+
+#
+# Single key press - which item and which port (end)
+#
+
+
 
 
 #
@@ -498,19 +557,227 @@ sed '1,3d' Taipan_TRS80-orig.txt | sed '$d'|sed '$d'|sed '$d' | sed -E 's/^ ([0-
 #
 
 #
-# Parley (SD)
+# Parley (SD) (Begin)
 #
 
 5645 IF W = 208 THEN CMD = 4: PRINT "Parley     "
 5180 ON CMD GOTO 5200,5300,5400,6000
+
 6000 REM PARLEY
-6090 goto 5500 *like line 5500*
+6090 GOTO 5500 *like line 5500? [Ed. - What does that even mean? Do you mean like RETURN, or similar to line 5500*][Ed2. - I think it was an initial suggestion in a comment and then later added as the command as well, thereby making the comment redundant]
+
+6000 REM
+6010 IF RND (1) < .8 THEN VTAB 4: HTAB 1: PRINT CL$:VTAB 4:PRINT " They refuse to parley, ";T$;"    ":GOSUB 96:VTAB 4:HTAB 1:PRINT CL$:GOTO 5500
+6010 IF RND (1) < .8 THEN VTAB 4: HTAB 1: PRINT CL$:VTAB 4:PRINT "They refuse to parley, ";T$;"    ":GOSUB 96:GOTO 5500
+6020  VTAB 4:PRINT "They agree to discuss terms.      ":GOSUB 96
+6030 IF SN > GN / 2 OR RND (1) > .7 THEN VTAB 4:PRINT "They offer to let us go in exchange for": VTAB 5: PRINT "all our cash. Do we accept, ";T$;" (Y/N)"; : GOTO 6050
+6040 GOTO 6090
+6050 CH$="YN" :GOSUB 100:VTAB 4: PRINT CL$:VTAB 5: PRINT CL$:IF CH% = 1 THEN IF RND (1) > .2 AND CA> 100 + INT ( RND (1) * 2000) THEN SN = 0: CA = 0: VTAB 4: PRINT "They took it & ran!": GOSUB 92: GOTO 6140
+6060 IF CH% = 2 THEN 5560
+6070 CA = 0:VTAB 4:PRINT "They still intend to fight!":PRINT:PRINT A$;:GOSUB 94
+6080 GOSUB 94:GOTO 5560
+6090  VTAB 4:HTAB 1:PRINT SFL$ ;:VTAB 4:PRINT "They offer to surrender. ":GOSUB 92:VTAB 4:PRINT "Do we let them give up (Y/N)?  ":CH$="YN" : GOSUB 100 : IF CH% = 2 THEN 6110
+6100 GOTO 5360
+6110 IF RND (1) > .7 THEN VTAB 4:PRINT "They're preparing to attack! ":GOSUB 92:GOTO 5560
+6120 REM CAPTURE (1270-1251)
+6130 REM VTAB 4:PRINT " We've captured a bigger ship!":CALL 2521:GOSUB 92:VTAB 4:PRINT " WE'RE TRANSFERRING TO IT NOW.":GOSUB 92:GN = GN + INT ( RND (1) * (GN + 1)) + 1:E = SC + INT ( RND (1) * (SC + 150)) + 1:SC = SC + E:MW = MW + E:SN = 0
+6140 OK=1:GOTO 5900
+
+#
+# Parley with single key press
+#
+# Redundant, use the shorter, more generic, subroutine below
+#
+
+5671 VTAB 2: HTAB 21: FOR II = 1 TO T / 3
+5672 W =  PEEK ( - 16384): IF W < 128 THEN  NEXT II: PRINT : RETURN 
+5673 IF W = 217 THEN CMD = 1: PRINT "Yes        "
+5674 IF W = 206 THEN CMD = 2: PRINT "No         "
+5675 POKE  - 16368,0: PRINT :RETURN
+
+6050 GOSUB 5671:VTAB 4: PRINT CL$:VTAB 5: PRINT CL$:IF CMD = 1 THEN IF RND (1) > .2 AND CA> 100 + INT ( RND (1) * 2000) THEN SN = 0: CA = 0: VTAB 4: PRINT "They took it & ran!": GOSUB 92: GOTO 6140
+6060 IF CMD = 2 THEN 5560
+
+# Note: Do not use CMD as this affects the battle instructions, use CYN, or something. 
+
+
+#
+# Parley with single key press
+#
+# More generic - just return W, and a bit more patient (/2 not T/3)
+# Y = 217, N = 206
+# Also, a better exit for line 6050, without booty, for "They took it and ran"
+# GOTO 5900 (with OK=3) instead of GOTO 6140
+# Fixed padding spaces on the two strings
+#
+
+5671 VTAB 2: HTAB 21: FOR II = 1 TO T / 2
+5672 W =  PEEK ( - 16384): IF W < 128 THEN  NEXT II: PRINT : RETURN 
+5675 POKE  - 16368,0: PRINT :RETURN
+
+6050 GOSUB 5671:VTAB 4: PRINT CL$:VTAB 5: PRINT CL$:IF W=217 THEN IF RND (1) > .2 AND CA> 100 + INT ( RND (1) * 2000) THEN SN = 0: CA = 0: VTAB 4: PRINT "They took it & ran!          ": GOSUB 94: OK = 3: GOTO 5900
+6060 IF W=206 THEN 5560
+6090  VTAB 4:HTAB 1:PRINT SFL$ ;:VTAB 4:PRINT "They offer to surrender.     ":GOSUB 96:VTAB 4:PRINT "Do we let them give up (Y/N)?":GOSUB 5671: IF W=217 THEN 6110
+
+
+#
+# Parley (SD) Summary
+#
+
+5645 IF W = 208 THEN CMD = 4: PRINT "Parley     "
+
+5671 VTAB 2: HTAB 21: FOR II = 1 TO T / 2
+5672 W =  PEEK ( - 16384): IF W < 128 THEN  NEXT II: PRINT : RETURN 
+5675 POKE  - 16368,0: PRINT :RETURN
+
+5180 ON CMD GOTO 5200,5300,5400,6000
+
+6000 REM
+6010 IF RND (1) < .8 THEN VTAB 4: HTAB 1: PRINT CL$:VTAB 4:PRINT "They refuse to parley, ";T$:GOSUB 96:GOTO 5500
+6020  VTAB 4:PRINT "They agree to discuss terms. ":GOSUB 96
+6030 IF SN > GN / 2 OR RND (1) > .7 THEN VTAB 4:PRINT "They offer to let us go in exchange for": VTAB 5: PRINT "all our cash. Do we accept, ";T$;" (Y/N)"; : GOTO 6050
+6040 GOTO 6090
+6050 GOSUB 5671:VTAB 4: PRINT CL$:VTAB 5: PRINT CL$:IF W=217 THEN IF RND (1) > .2 AND CA> 100 + INT ( RND (1) * 2000) THEN SN = 0: CA = 0: VTAB 4: PRINT "They took it & ran!          ": GOSUB 94: OK = 3: GOTO 5900
+6060 IF W=206 THEN 5560
+6070 CA = 0:VTAB 4:PRINT "They still intend to fight!  ":GOSUB 96
+6080 GOSUB 94:GOTO 5560
+6090 VTAB 4:HTAB 1:PRINT "They offer to surrender.     ":GOSUB 96:VTAB 4:HTAB1:PRINT "Do we let them give up (Y/N)?":GOSUB 5671: VTAB 4:  HTAB1: PRINT CL$:IF W=217 THEN 6110
+6100 GOTO 5360
+6110 IF RND (1) > .7 THEN VTAB 4:PRINT "They're preparing to attack! ":GOSUB 96:GOTO 5560
+6120 REM CAPTURE (1270-1251)
+6130 REM VTAB 4:PRINT "We've captured a bigger ship!":CALL 2521:GOSUB 92:VTAB 4:PRINT "We're transferring to it now.":GOSUB 92:GN = GN + INT ( RND (1) * (GN + 1)) + 1:E = SC + INT ( RND (1) * (SC + 150)) + 1:SC = SC + E:MW = MW + E:SN = 0
+6140 OK=1:GOTO 5900
+
+
+
+#
+# Parley (SD) Summary - more responsive to single key press
+#
+# Replace GOSUB 96 with GOSUB 5600 in lines 6010, 6070, 6110
+# Remove excess GOSUB 94 in 6080
+# Amalgamate 6080 into 6070 and delete 6080 as excess to requirements
+# 6080 is never called
+# Fixed bug in line 6060: Is there a sticky Y key to "Do you wish to surrender?" Press it once, then next time don't.
+# Both times you'll get a "They still intend to fight" message.
+#     6060 IF W=206 THEN 5560
+# Should be 
+#     6060 IF W<>217 THEN 5560
+# Like the book.
+# Remove the CLS and VTAB from line 6010, not required
+# Reduce delay in line 6050
+#
+
+5645 IF W = 208 THEN CMD = 4: PRINT "Parley     "
+
+5671 VTAB 2: HTAB 21: FOR II = 1 TO T / 2
+5672 W =  PEEK ( - 16384): IF W < 128 THEN  NEXT II: PRINT : RETURN 
+5675 POKE  - 16368,0: PRINT :RETURN
+
+5180 ON CMD GOTO 5200,5300,5400,6000
+
+6000 REM
+6010 IF RND (1) < .8 THEN VTAB 4: HTAB 1: PRINT "They refuse to parley, ";T$:GOSUB 5600:GOTO 5500
+6020  VTAB 4:PRINT "They agree to discuss terms. ":GOSUB 96
+6030 IF SN > GN / 2 OR RND (1) > .7 THEN VTAB 4:PRINT "They offer to let us go in exchange for": VTAB 5: PRINT "all our cash. Do we accept, ";T$;" (Y/N)"; : GOTO 6050
+6040 GOTO 6090
+6050 GOSUB 5671:VTAB 4: PRINT CL$:VTAB 5: PRINT CL$:IF W=217 THEN IF RND (1) > .2 AND CA> 100 + INT ( RND (1) * 2000) THEN SN = 0: CA = 0: VTAB 4: PRINT "They took it & ran!          ": GOSUB 96: OK = 3: GOTO 5900
+6060 IF W<>217 THEN 5560
+6070 CA = 0:VTAB 4:PRINT "They still intend to fight!  ":GOSUB 5600: GOTO 5560
+6090 VTAB 4:HTAB 1:PRINT "They offer to surrender.     ":VTAB 5:HTAB1:PRINT "Do we let them give up (Y/N)?":GOSUB 5671: VTAB 4: HTAB1: PRINT CL$:VTAB 5: HTAB1: PRINT CL$:IF W=217 THEN 6110
+6100 GOTO 5360
+6110 IF RND (1) > .7 THEN VTAB 4:PRINT "They're preparing to attack! ":GOSUB 5600:GOTO 5560
+6120 REM CAPTURE (1270-1251)
+6130 REM VTAB 4:PRINT "We've captured a bigger ship!":CALL 2521:GOSUB 92:VTAB 4:PRINT "We're transferring to it now.":GOSUB 92:GN = GN + INT ( RND (1) * (GN + 1)) + 1:E = SC + INT ( RND (1) * (SC + 150)) + 1:SC = SC + E:MW = MW + E:SN = 0
+6140 OK=1:GOTO 5900
+
+#
+# Parley (SD) (End)
+#
+
+#
+# Hacks for testing
+#
+
+# Always pirates (D)
+
+# Delete 3110 or 3210
+# Do we need to delete both?
+3110 REM IF  FN R(BP) THEN 3200
+# Note that changing line 3210 will make the game very difficult, as you will always have to face Li Yuen. It is better just to have the "normal" pirates each turn
+3210 REM IF  FN R(4 + 8 * LI) THEN 3300
+
+
+# Always offered new gun (D)
+# Assuming that you have the necessary cash
+1710 I =  INT ( FN R(1000 * (TI + 5) / 6) + 500): IF CA < I THEN 1900
+
+# Always get extra gun
+# In addition to line 1710 above,
+1715 WW = I: GOSUB 600: GOSUB 400: PRINT "Do you wish to buy a ship's gun": PRINT "for ";WW$;", ";T$;"? ";:GOTO 1730
+
+# Always offered ship upgrade (D)
+# Assuming that you have the necessary cash
+1610 I =  INT (1000 +  FN R(1000 * (TI + 5) / 6)) * ( INT (SC / 50) * (DM > 0) + 1): IF CA < I THEN 1700
+
+# Always get ship upgrade (ND)
+# In addition to line 1610 above,
+1625 CA = CA - I:MW = MW + 50:SC = SC + 50:DM = 0: GOSUB 300: GOTO 1700
+
+# Pirates never hit a gun (D)
+5550 REM IF GN THEN  IF  FN R(100) < (DM / SC) * 100 OR (DM / SC) * 100 > 80 THEN I = 1: GOSUB 5600: VTAB 4: PRINT CL$: VTAB 4: PRINT "The buggers hit a gun, ";T$;"!!": CALL 2512:GN = GN - 1:MW = MW + 10: GOSUB 5600: VTAB 4: PRINT CL$
+
+# Always Fight (ND)
+# Same as self-play hack
+5605 W=198:GOTO 5620
+
+# Hacked game notes
+# 33 guns gives you 15 sunk
+# 36 gives 20
+# 42 gives 15-20
+# 49 20-22
+# 51 16
+# 53 18-21
+# 55 20 23 
+# 59 20-26
+# 60 20-25
+# 61 23-28
+# 67 23-27
+# 69 24-27
+# 70 24-27
+# 71 24-27
+# 78 24-29
+# 80 23-30
+# 81 22-29
+# 84 27-31
+# 87 23-31
+# 88 21-31
+# 89 22-31
+# 90 26-30
+# 91 25-30
+# 96 26-31
+# 97 25-32
+# 98 24-31
+# 99
+# 100
+# 101 28-31
+# 100 guns gives you 30+ sunk
+# There is a drop off at around 50+?
+# Note that the amount of pirates that run away also increases dramatically, often double the sunk, and isn't accounted for, above.
+
+# BLOG:
+# Differences twixt HiRes game and book
+# All "A" does not buy all you can hold, instead it annoyingly buys all you can afford, thereby, inevitably, over filling the hold. Useless. You have to type in the amount each time, which is tedious. Is the book the same? I don't think so
+
+#
+# Hacks for testing (end)
+#
+
 
 #
 # More guns
 #
 
-# More guns (ND)- not working due to previous ND hack 10145 which skips these lines
+# More guns (ND) - not working due to previous ND hack 10145 which skips these lines
 10175 GN = 4
 10175 GN = 6
 10175 GN = 6:MW=0
@@ -598,7 +865,13 @@ REM IF OV < 0 THEN OV =-OV/10: PRINT OV;" guns too many - thrown overboard" :  G
 
 # However, if the SC is set correctly at initialisation then this extra complexity really isn't required!
 
+#
 # Additional notes:
+#
+# DEF FN lines
+#
+# 10020 DEF  FN R(X) =  INT ( USR (0) * X)
+#
 #
 # Lines - USR(x)
 #
@@ -658,7 +931,9 @@ REM IF OV < 0 THEN OV =-OV/10: PRINT OV;" guns too many - thrown overboard" :  G
 # 1100 (F) - More port arrival stuff
 # 1120-1160 - Repair
 # 1600-1630 - Upgrade ship
+# 1610 - conditional for upgrade ship
 # 1700-1740 - Extra gun
+# 1710 - conditional for new gun
 # 1900-1910 - ???
 # 2000- - ???
 # 2030 - ???
@@ -679,7 +954,9 @@ REM IF OV < 0 THEN OV =-OV/10: PRINT OV;" guns too many - thrown overboard" :  G
 # 2695 (F) Retire (millionaire???)
 # 2700 (F) Embark
 3100-3120 - Pirates approaching
+3110 - Decides if pirates attack
 3200-3230 - Li Yuen pirates approaching
+3210 - Decides if Li Yuen attacks
 3300-3350 - Storm
 5000- - Pirate fight
 5000-5080 - 
@@ -691,20 +968,24 @@ REM IF OV < 0 THEN OV =-OV/10: PRINT OV;" guns too many - thrown overboard" :  G
 5200 (F) - Pirates - run
 5210 - Did we get away?            (OK=3)
 5300 (F) - Pirates - fight
+5310 We fire on pirates
 5360 - Some ran away
 5400 (F) - Pirates - Throw
 5500-5590 (F) - End of battle round & calculations
 5505 - Did we win?                 (OK=1)
+5510 (F) - Pirates fire on us
 5560 - Did Li Yuen drive them off? (OK=2)
 5600-5670 (S) - Handle battle input (Run, Fight, Throw)
 5600-5610 - Get key press
-5700-5740 (S)
-5750-5770 (S)
-5800 (S) - 
-5820 (S) - 
-5840 (S) - 
-5860 (S) - 
-5880 (S) -  
+5700-5740 (S) -  Cycle through ten ships (doing  what exactly???, SS, SA, AM% FN R(EC))
+5700 (S) - (called from 5100)
+5750-5770 (S) - Print space adjusted number of guns and ships (called from 5100)
+5760 (S) - Print space adjusted number of guns and ships (called from 5100)
+5800 (S) - Print ship (SH - top?)
+5820 (S) - Print ship (SB - bottom?)
+5840 (S) - Do a ship flash and animation
+5860 (S) - Poke at X,Y related location (what for?)
+5880 (S) - Calc X and Y for printing ships in battle
 5900 (F) - End of battle (we may have lost or won) (OK set?)
 5910 - We lost                     (OK=0)
 5920 - We won                      (OK=1)
@@ -744,7 +1025,8 @@ Do you have business with Elder Brother Wu, the moneylender?
 
 10040 HM$ =  CHR$ (16):CS$ =  CHR$ (1) + "0":CA$ =  CHR$ (1) + "1":CG$ =  CHR$ (1) + "2":BD$ =  CHR$ (2):CD$ =  CHR$ (3):DD$ =  CHR$ (4):IV$ =  CHR$ (9):NV$ =  CHR$ (14):FS$ =  CHR$ (25):CE$ =  CHR$ (6):CL$ =  CHR$ (5)
 
-FS$ and HM$ together clear the screen
+ - FS$ and HM$ together clear the screen
+ - CLS clears a line
  
 # Characters
 
@@ -755,11 +1037,11 @@ from appl2.org/faq/FAQ.applesoft.html
 3 CD$
 4 ctrl-D DD$
 5 CL$
-6   CE$
+6 CE$
 7 BELL
 9 IV$
 14 NV$
-16  HM$
+16 HM$
 25 FS$
 
 
@@ -773,32 +1055,31 @@ from appl2.org/faq/FAQ.applesoft.html
 # GOSUB 92-98 (2T, T, T/2)
 
 #
-# Sound:
-#
 # CALL
+#
+# Including sound.
+#
+#
 # 53 total
 #
 # -958
 # 2200 General input (put into WK$ (partially?))
 # 2224 Ship sink
-# 2368 Ship flash???
-# 2512 (four beeps)
-# 2518 (three beeps)
-# 2521 (two beeps)
-# 2524 (one simple beep)
-# 2560 QBS only input (YN or contents of CH$)
-# 2680 Numeric input (put into ???)
-# 6147 ?
+# 2368 Ship flash??? And damage animation???
+# 2512 Sound (four beeps)
+# 2518 Sound (three beeps)
+# 2521 Sound (two beeps)
+# 2524 Sound (one simple beep)
+# 2560 Selective input ("QBS"/"YN"/ETC. or contents of CH$)
+# 2680 Numeric input (put into WK$ apparently, see line 150)
+# 6147 ? (`0x1803`) Set input/output???
 
-
-#
-# CALL
-#
-#
 
 #
 # POKES
-#35 total
+# 35 total
+#
+# Examples:
 #
 # 98 POKE -16368,0 Clear key press
 # 320 POKE 33 Width of text window
@@ -810,20 +1091,66 @@ from appl2.org/faq/FAQ.applesoft.html
 POKE 10,76: POKE 11,16: POKE 12,11: Poking USR jump instructions
 POKE 1010,102: POKE 1011,213: POKE 1012,112 Makes RESET RUN
 # 10070 POKE 2367,236   A flag?
+#
+# Locations:
+#
+# -16368 - Clear key press
+# -16304 - Soft (display) switches - Shows graphics screen
+# -16303 - Soft (display) switches - Shows text screen
+# -16302 - Soft (display) switches - Full screen graphics - no text
+# -16301 - Soft (display) switches - Allows graphics and 4 lines of text
+# -16300 - Soft (display) switches - Switch from high-res page 2 to page 1
+# -16299 - Soft (display) switches - Switch from high-res page 1 to page 2
+# -16298 - Soft (display) switches - Lo-res
+# -16297 - Soft (display) switches - Hi-res
+# 10 - Poking USR jump instructions???
+# 11 - Poking USR jump instructions???
+# 12 - Poking USR jump instructions???
+# 32 - left margin
+# 33 - Width of text window
+# 34 - top margin
+# 35 - bottom margin
+# 1010 - Makes RESET RUN
+# 1011 - Makes RESET RUN
+# 1012 - Makes RESET RUN
+# 1013 - Set Ampersand vector to what? POKE?
+# 1014 - Set Ampersand vector to what? POKE?
+# 1015 - Set Ampersand vector to what? POKE?
+# 2300
+# 2361
+# 2362
+# 2367 -  A flag?
+# 2493
+# 2494
+
+Sources: 
+
+ - [The Big PEEKs, POKEs, and CALLs List](https://gswv.apple2.org.za/USA2WUG/FOUNDING.MEMBERS/HOME.PAGES/EDHEL/texts/pokes.html)
+ - [PEEKS, POKES, CALLS AND PROGRAMMING NOTES](https://mirrors.apple2.org.za/ground.icaen.uiowa.edu/Collections/1WSW/MEGA.PEEKS.AND.POKES.html)
+
 
 #
-# & (POKE?)
+# & (Set to POKE in line 10010?)
 # 12 total
+#
+# Examples:
 #
 # 10110 VTAB 8: HTAB 1: PRINT CG$;"[";: & 45,38: PRINT "]";: FOR I = 1 TO 8: PRINT "!"; TAB( 40);"!";: NEXT I: PRINT "<";: & 58,38: PRINT ">";CS$
 # 10120 & 45,22: Last lo-res VLIN bottom endpoint
 # 10120 & 32,27: 
 # 10120 POKE 33,39: CALL 2200 POKE 33,40
-10130 IF  LEN (WK$) > 22 THEN  PRINT : VTAB 18: PRINT IV$;: & 32,42: PRINT "Please limit your Firm's name to 22     characters or less.";: & 32,59:
-20040 VTAB 14: PRINT "Your Rating:": PRINT CG$;"[";: & 45,31: PRINT "]": FOR I = 1 TO 5: PRINT "!";: HTAB 33: PRINT "!": NEXT I: PRINT "<";: & 58,31: PRINT ">";CS$: VTAB 16
-220 VTAB 2: PRINT CG$;"[";: & 45,26: PRINT "]": FOR II = 1 TO 5: PRINT "!"; TAB( 28);"!": NEXT II: PRINT "(";: & 61,26: PRINT ")": FOR II = 1 TO 5: PRINT "!"; TAB( 28);"!": NEXT II: PRINT "<";: & 58,26: PRINT ">";CS$
-260 VTAB 16: HTAB 1: PRINT CG$;: & 45,40: PRINT CS$
-
+# 10130 IF  LEN (WK$) > 22 THEN  PRINT : VTAB 18: PRINT IV$;: & 32,42: PRINT "Please limit your Firm's name to 22     characters or less.";: & 32,59:
+# 20040 VTAB 14: PRINT "Your Rating:": PRINT CG$;"[";: & 45,31: PRINT "]": FOR I = 1 TO 5: PRINT "!";: HTAB 33: PRINT "!": NEXT I: PRINT "<";: & 58,31: PRINT ">";CS$: VTAB 16
+# 220 VTAB 2: PRINT CG$;"[";: & 45,26: PRINT "]": FOR II = 1 TO 5: PRINT "!"; TAB( 28);"!": NEXT II: PRINT "(";: & 61,26: PRINT ")": FOR II = 1 TO 5: PRINT "!"; TAB( 28);"!": NEXT II: PRINT "<";: & 58,26: PRINT ">";CS$
+# 260 VTAB 16: HTAB 1: PRINT CG$;: & 45,40: PRINT CS$
+#
+# Locations:
+#
+# 32 - 
+# 33 - 
+# 45 - Last lo-res VLIN bottom endpoint
+# 58 - 
+# 61 - 
 
 
 #
@@ -850,8 +1177,8 @@ POKE 1010,102: POKE 1011,213: POKE 1012,112 Makes RESET RUN
 1715 WW = I: GOTO 1730
 2527 GOTO 2700
 2699 RUN 
-3015 IF LO=7 OR LO =2 THEN D = ABS(LO-9):GOTO 3030
-3016 IFLO<>2 AND LO<>7 THEN D=2:GOTO 3030
+3015 IF LO = 7 OR LO = 2 THEN D = ABS(LO-9):GOTO 3030
+3016 IF LO <> 2 AND LO <> 7 THEN D=2:GOTO 3030
 5604 IF GN = 0 THEN  W=210:GOTO 5620
 5605 W=198:GOTO 5620
 20005 PR#1
@@ -859,3 +1186,145 @@ POKE 1010,102: POKE 1011,213: POKE 1012,112 Makes RESET RUN
 10115 WK$="ME":GOTO 10130
 10145 MO = 1:YE = 1860:SC = 60:BA = 0:LO = 1:TI = 1:WC = 10000:WS = 0:DW = 0:CA = 0:MW = 10:GN = 5:BP = 7:GOTO 10180
 
+#
+# Self Playing Hack
+#
+# BASIC code only (End)
+#
+
+
+
+#
+# Switchable self play
+#
+
+# Make self playing turn on and off, with a single key press ('S' for self play) in the pirate battle? Set, or rather toggle, a flag FS,
+                                         
+5646 IF W = ASC("S") THEN OLDCMD = CMD: CMD = 5: PRINT "Self play  "
+5180 ON CMD GOTO 5200,5300,5400,6000, 5690
+5690 CMD=OLDCMD:FS=ABS(FS-1)
+
+# Or just ignore the CMD and preserve the previous command (better)
+5646 IF W = ASC("S") THEN FS=ABS(FS-1): PRINT "Self play  " # not work
+# However, for some reason ASC("S) gives 85 and not 211
+5646 IF W = 211 THEN FS=ABS(FS-1): PRINT "Self play  "
+
+# Don't forget to init the flag if you wish default ON at the start - but system default it is set to zero, i.e. off. Init where, non destructively? 10115 or 10145...
+# Not a good solution, see below
+10115 WK$="ME":FS=1:GOTO 10130  # not good
+
+# Then prefix the lines above with
+
+IF FS THEN ...
+
+# Like so
+
+1035 IF FS THEN GOTO 1120
+1125 IF FS THEN GOTO 1210
+1305 IF FS THEN GOTO 1500
+1629 IF FS THEN CA = CA - I:MW = MW + 50:SC = SC + 50:DM = 0: GOSUB 300: GOTO 1700
+1715 IF FS THEN WW = I: GOTO 1730
+2527 IF FS THEN GOTO 2700
+2699 IF FS THEN RUN 
+3015 IF FS THEN IF LO=7 OR LO =2 THEN D = ABS(LO-9):GOTO 3030
+3016 IF FS THEN IFLO<>2 AND LO<>7 THEN D=2:GOTO 3030
+5604 IF FS THEN IF GN = 0 THEN  W=210:GOTO 5620
+5605 IF FS THEN W=198:GOTO 5620
+20005 IF FS THEN PR#1
+20195 IF FS THEN PR#0
+10115 IF FS THEN WK$="ME":GOTO 10130
+10145 IF FS THEN MO = 1:YE = 1860:SC = 60:BA = 0:LO = 1:TI = 1:WC = 10000:WS = 0:DW = 0:CA = 0:MW = 10:GN = 5:BP = 7:GOTO 10180
+
+
+
+# However, FS will reset each game play, so it will not work over a subsequent game or multiple games.
+# Also, if FS is not set, in line 10115, 
+10115 WK$="ME":FS=1:GOTO 10130
+# Then 10145 will not run, therefore the 1,2 option is not skipped.
+# This makes little sense due to logic
+10115 IF FS THEN WK$="ME":FS=1:GOTO 10130
+# So (better) 
+# This means that the name and 1,2 options are both required on the first play, but once self play is started, then they work automatically.
+# and it works with the "no RUN" hack below 
+10115 IF FS THEN WK$="ME":GOTO 10130
+
+# To set FS on always, add
+# (but then why add the whole FS flag hack? Unless you want to be able to slow down one particular game - useful)
+10114 FS = 1
+
+
+# Basically you do not need to modify lines before the pirates battle, or lines that aren't in the "game play loop"
+#
+# Unless... instead of RUN do GOTO at line 2699
+# **NOTE**: Ensure that any variables that rely on not being declared at the start are in fact declared and set to zero - except for FS, obviously, unless you want it not to carry over (in which case, why would you do the following hack?!)
+# NOTE: As there is a CLEAR statement at the start, then a destructive edit is required
+10 WK$ = "*":CH$ = "*":CH% = 0:WU% = 0:R1% = 0:I = 0:J = 0:K = 0:II = 0:IJ = 0:IK = 0:T = 300:LT =  LOG (10):T$ = "Taipan": GOTO 10000
+# or non-destructive
+9 WK$ = "*":CH$ = "*":CH% = 0:WU% = 0:R1% = 0:I = 0:J = 0:K = 0:II = 0:IJ = 0:IK = 0:T = 300:LT =  LOG (10):T$ = "Taipan": GOTO 10000
+
+# Optional: Not required for just one game
+# Note: Using GOTO 1 causes a hang, no error is displayed strangely, as is the case if GOTO 1 is entered at the command prompt: UNDEF'D STATEMENT ERROR
+2699 IF FS THEN GOTO 10
+# or for the non destructive edit to line 10 (even though 2699 is naturally and unavoidably destructive)
+2699 IF FS THEN GOTO 9
+# But then we get a REDIM'D ARRAY ERROR in 10010
+# Hmmm... could use a poke instead of a variable flag, or
+# temporarily poke the value of FS before the CLEAR and then reinstate it.
+
+#
+# Summary of "Switchable"
+#
+
+# - Auto play from keypress - must play one game up to a battle
+5646 IF W = 211 THEN FS=ABS(FS-1): PRINT "Self play  "
+
+#
+# - Autoplay from the start and with ability to slow just the current game down
+# This is, arguably, the most useful as it means you can wait until you get a lot of guns, say 14,  and then you can play the game yourself. Effectively a cheat.
+5646 IF W = 211 THEN FS=ABS(FS-1): PRINT "Self play  "
+10114 FS = 1
+
+# However due to 5604 and 5605 once the flag is set, the keypress and keypress test is jumped, so you can not turn off self play! 
+# To fix, need to reorganise/rethink the battle hack to enable an actual keypress
+
+#
+# Switchable self play (End)
+#
+
+
+# BUG: "Your ship would be overburdened" printed across top panel if trying to buy a gun, when you already have 6 and have not yet upgraded the ship
+# Seen twice:
+# on Virtual [] and;
+# on MAME/Ample (when running self play, at turbo speed)
+
+#
+# Variables not reset on GOTO 10 (that depended upon the CLEAR statement)
+#
+
+None? Or not yet discovered (due to difficulty posed by the CLEAR)
+
+#
+# Variables list
+#
+
+S0 (5080)
+
+SK - Sunk pirates
+
+DM (5550) -  damage???
+SC (5550)
+
+SA (5720) - Number of ships/pirates (differ from SN???)
+SN - Number of ships/pirates
+How are SA and SN related (see line 5230(?) and 5080, 5362)
+SS (5683) - sunk ships???
+
+Number of run away?
+Number of pirate ships leaves on screen?
+
+
+WW  (5920)
+BT  (5920)
+WW$ (5920)
+
+T$ Taipan's name
