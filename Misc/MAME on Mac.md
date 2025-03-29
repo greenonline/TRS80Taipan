@@ -1,4 +1,4 @@
-# Getting MAME running on Mac
+# Getting a Macintosh SE running in MAME running on macOS
 
 ## Quick Start
 
@@ -26,7 +26,7 @@ You only really need
 
 If you find the command line a bit daunting, then there is a workaround.
 
-Find [**m64**](https://github.com/bamf2048/bamf2048.github.io/releases/download/M64/M64.app.zip), right click, select,**Package Contents**, and in
+Find [**m64**](https://github.com/bamf2048/bamf2048.github.io/releases/tag/M64) ([direct download](https://github.com/bamf2048/bamf2048.github.io/releases/download/M64/M64.app.zip)), right click, select,**Package Contents**, and in
 `Contents/Resources/script` place the commands that you use to run the emulator:
 
 ```none
@@ -38,11 +38,22 @@ cd ~/Downloads/mame0261-x86
 exec ./mame -video opengl
 ```
 
+would become
+
+```none
+#!/bin/sh
+
+#cd ../../..
+cd ~/Downloads/mame0261-x86
+#./mame64
+exec ./mame macse -hard1 Mac40MB.chd -flop1 System_Tools.image -video opengl
+```
+
 See also [Tutorial - Running MAME on Mac OS X - Part 1](https://bamf2048.github.io/sdl_mame_tut/)
 
-## Required files
+## Required files for a Macintosh SE
 
-There requires files are:
+The required files are:
 
  - System installation disks
  - ROM
@@ -115,87 +126,6 @@ From [System ROMs](https://docs.mamedev.org/usingmame/assetsearch.html#system-ro
 > ... so MAME will look for a folder called jgakuen, a PKZIP archive called jgakuen.zip, or a 7-Zip archive called jgakuen.7z.
 
 I have used both `macplus.zip` and `macplus/` and they both work. The unzipped version may be less processor intensive and/or faster? Plus, wihout wishing to state the obvious, it is also easier to view the contents of the *unzipped* files when trying to debug missing ROM files.
-
-### COCO is just a directory for packaging?
-
-Seeing as [`coco.zip`](https://archive.org/download/mame251/coco.zip) contains `coco3/`, plus a number of others... is the `coco/` directory, actually just a directory that bundles all fo the coco related stuff together? Do the contents need to be brought up to the top level of `roms/`. In other words, should the contents of `coco.zip` be placed directly within `roms/`?
-
-Moving `coco3/` from `roms/coco/coco3` to `roms/coco3/`, actually made the COCO3 emulation work, and strangley, the `Missing "disk11.rom"` error didn't show, even though it isn't in the `coco3/` but rather in `coco/`, like so
-
-```none
-mame/
-    roms/
-        coco3/
-             coco3.rom
-        coco/
-             bas12.rom
-             extrabas11.rom
-             disk11.rom
-             bas10.rom
-```
-
-Note that there is no `coco.rom`..!
-
-The answer is revealed if you remove `roms/coco/` and then run `mame coco3` again. This time an error does occur:
-
-```none
-disk11.rom NOT FOUND (tried in coco_fdc coco3 coco)
-```
-
-So, MAME looks in *both* `coco/` and `coco3/` to find the `disk11.rom` file.
-
-As to whether the *entire* contents of `coco/` should be spilled into the top level of `roms/`, well, if you did that, then:
-
- - It would look less tidy
- - Where would the "loose" files within `coco/` be placed? Loose within `roms/`? These files are :
-   - `bas12.rom`
-   - `extbas11.rom`
-   - `disk11.rom`
-   - `bas10.rom`
-
-It really seems as if there should be a way for accessing "sub machines", like so
-
-```none
-mame coco/coco3
-```
-But this doesn't seem to be the case.
-
-From [Archive files](https://docs.mamedev.org/usingmame/assetsearch.html#archive-files), 
-
-> MAME does not load files from nested archives.
-
-From [How does MAME search for media](https://docs.mamedev.org/usingmame/assetsearch.html#how-does-mame-search-for-media)
-
-> but remember the limitation that MAME cannot load files from an archive contained within another archive.
-> 
-> ...
-> 
-> MAME looks for a folder first, then a PKZIP archive, and finally a 7-Zip archive.
-> 
-> ...
-> 
-> It’s best to keep CHD format disk images in folders (not in compressed files).
-
-#### Coco2b and Coco3p
-
-Note that from withon `coco/`, the directories `coco2b` and `coco3p` can also be moved to the top level `roms/`.
-
-However, `coco2` can not be moved - it does not make coco2 work - in fact, there is no coco2 machine:
-
-```none
-Unknown system 'coco2'
-
-"coco2" approximately matches the following
-supported machines (best match first):
-
-coco2b            Color Computer 2B                (Tandy Radio Shack, 1985?)
-coco              Color Computer 1/2               (Tandy Radio Shack, 1980)
-coco2bh           Color Computer 2B (HD6309)       (Tandy Radio Shack, 19??)
-coco3             Color Computer 3 (NTSC)          (Tandy Radio Shack, 1986)
-cocoh             Color Computer 1/2 (HD6309)      (Tandy Radio Shack, 19??)
-coco3h            Color Computer 3 (NTSC; HD6309)  (Tandy Radio Shack, 19??)
-coco3p            Color Computer 3 (PAL)           (Tandy Radio Shack, 1986)
-```
 
 ### Starting in a window makes it easier to quit
 
@@ -321,7 +251,7 @@ As stated above, the truncation error could be possibly due to (slightly) differ
 
 
 
-## Emulated systems
+## Other emulated systems
 
 ### IBM 5150
 
@@ -441,53 +371,6 @@ In addition to the obvious [c64.zip](https://archive.org/download/mame251/c64.zi
  - [c1541.zip](https://archive.org/download/mame251/c1541.zip)
 
  
-### TRS-80
-
-#### COCO
-
-In addition to the not so obvious [coco.zip](https://archive.org/download/mame251/coco.zip), you will also need:
-
-
- - [bas12.rom](https://archive.org/download/mame-0.221-roms-merged/coco.zip/coco2%2Fbas12.rom) from [listing of coco.zip
-](https://ia903204.us.archive.org/view_archive.php?archive=/29/items/mame-0.221-roms-merged/coco.zip)
- - [extbas.rom](https://archive.org/download/mame-0.221-roms-merged/coco.zip/coco2%2Fextbas11.rom)  from [listing of coco.zip
-](https://ia903204.us.archive.org/view_archive.php?archive=/29/items/mame-0.221-roms-merged/coco.zip)
- - [disk11.rom](https://colorcomputerarchive.com/repo/ROMs/XRoar/CoCo/DOS/disk11.rom) from [TRS-80 Color Computer Archive](https://colorcomputerarchive.com/repo/ROMs/XRoar/CoCo/DOS/)
-
- `disk11.rom` place in `mame0256-x6/roms/coco/disk11.rom`.
-
-#### COCO3
-
-There is no `coco3.zip`, instead... but note that coco3 is *already* in `coco.zip`. 
-
-In addition to the not so obvious [coco3_hdb1.zip](https://archive.org/download/mame251/coco.zip), you will also need:
-
- - [disk11.rom](https://colorcomputerarchive.com/repo/ROMs/XRoar/CoCo/DOS/disk11.rom) from [TRS-80 Color Computer Archive](https://colorcomputerarchive.com/repo/ROMs/XRoar/CoCo/DOS/)
-
- `disk11.rom` place in `mame0256-x6/roms/coco/disk11.rom`.???
- 
- Trying to run coco3 says that it can not find `coco3.rom`:
- 
- ```none
- coco3.rom NOT FOUND (tried in coco3 coco)
- ```
- 
- But `coco3.rom` is *already* in `mame/roms/coco/coco3/coco3.rom`
- 
- Trying to run `coco3-hdb1`, results in
- 
- ```none
- Unknown system 'coco3-hdb1'
-```
-
-See **COCO is just a directory for packaging?** above for solution.
-
-#### Coco2b
-
-#### Coco3
-
-#### Coco3p
-
 ### Game cube
 
 Using 229 ROMs
@@ -593,6 +476,134 @@ Note: There may be (corrupted?) ROM issues for the QL:
 % ./mame ql -window  
 hal16l8.ic38 NOT FOUND (NO GOOD DUMP KNOWN) (tried in ql)
 WARNING: the machine might not run correctly.
+```
+
+### TRS-80
+
+#### COCO
+
+In addition to the, not so obvious, [coco.zip](https://archive.org/download/mame251/coco.zip), you will also need:
+
+
+ - [bas12.rom](https://archive.org/download/mame-0.221-roms-merged/coco.zip/coco2%2Fbas12.rom) from [listing of coco.zip
+](https://ia903204.us.archive.org/view_archive.php?archive=/29/items/mame-0.221-roms-merged/coco.zip)
+ - [extbas.rom](https://archive.org/download/mame-0.221-roms-merged/coco.zip/coco2%2Fextbas11.rom)  from [listing of coco.zip
+](https://ia903204.us.archive.org/view_archive.php?archive=/29/items/mame-0.221-roms-merged/coco.zip)
+ - [disk11.rom](https://colorcomputerarchive.com/repo/ROMs/XRoar/CoCo/DOS/disk11.rom) from [TRS-80 Color Computer Archive](https://colorcomputerarchive.com/repo/ROMs/XRoar/CoCo/DOS/)
+
+ `disk11.rom` place in `mame0256-x6/roms/coco/disk11.rom`.
+
+#### COCO3
+
+There is no `coco3.zip`, instead... but note that coco3 is *already* in `coco.zip`. 
+
+In addition to the not so obvious [coco3_hdb1.zip](https://archive.org/download/mame251/coco.zip), you will also need:
+
+ - [disk11.rom](https://colorcomputerarchive.com/repo/ROMs/XRoar/CoCo/DOS/disk11.rom) from [TRS-80 Color Computer Archive](https://colorcomputerarchive.com/repo/ROMs/XRoar/CoCo/DOS/)
+
+ `disk11.rom` place in `mame0256-x6/roms/coco/disk11.rom`.???
+ 
+ Trying to run coco3 says that it can not find `coco3.rom`:
+ 
+ ```none
+ coco3.rom NOT FOUND (tried in coco3 coco)
+ ```
+ 
+ But `coco3.rom` is *already* in `mame/roms/coco/coco3/coco3.rom`
+ 
+ Trying to run `coco3-hdb1`, results in
+ 
+ ```none
+ Unknown system 'coco3-hdb1'
+```
+
+See **COCO is just a directory for packaging?** above for solution.
+
+#### Coco2b
+
+#### Coco3
+
+#### Coco3p
+
+#### COCO is just a directory for packaging?
+
+Seeing as [`coco.zip`](https://archive.org/download/mame251/coco.zip) contains `coco3/`, plus a number of others... is the `coco/` directory, actually just a directory that bundles all fo the coco related stuff together? Do the contents need to be brought up to the top level of `roms/`. In other words, should the contents of `coco.zip` be placed directly within `roms/`?
+
+Moving `coco3/` from `roms/coco/coco3` to `roms/coco3/`, actually made the COCO3 emulation work, and strangley, the `Missing "disk11.rom"` error didn't show, even though it isn't in the `coco3/` but rather in `coco/`, like so
+
+```none
+mame/
+    roms/
+        coco3/
+             coco3.rom
+        coco/
+             bas12.rom
+             extrabas11.rom
+             disk11.rom
+             bas10.rom
+```
+
+Note that there is no `coco.rom`..!
+
+The answer is revealed if you remove `roms/coco/` and then run `mame coco3` again. This time an error does occur:
+
+```none
+disk11.rom NOT FOUND (tried in coco_fdc coco3 coco)
+```
+
+So, MAME looks in *both* `coco/` and `coco3/` to find the `disk11.rom` file.
+
+As to whether the *entire* contents of `coco/` should be spilled into the top level of `roms/`, well, if you did that, then:
+
+ - It would look less tidy
+ - Where would the "loose" files within `coco/` be placed? Loose within `roms/`? These files are :
+   - `bas12.rom`
+   - `extbas11.rom`
+   - `disk11.rom`
+   - `bas10.rom`
+
+It really seems as if there should be a way for accessing "sub machines", like so
+
+```none
+mame coco/coco3
+```
+But this doesn't seem to be the case.
+
+From [Archive files](https://docs.mamedev.org/usingmame/assetsearch.html#archive-files), 
+
+> MAME does not load files from nested archives.
+
+From [How does MAME search for media](https://docs.mamedev.org/usingmame/assetsearch.html#how-does-mame-search-for-media)
+
+> but remember the limitation that MAME cannot load files from an archive contained within another archive.
+> 
+> ...
+> 
+> MAME looks for a folder first, then a PKZIP archive, and finally a 7-Zip archive.
+> 
+> ...
+> 
+> It’s best to keep CHD format disk images in folders (not in compressed files).
+
+#### Some additional notes about Coco2b and Coco3p
+
+Note that from withon `coco/`, the directories `coco2b` and `coco3p` can also be moved to the top level `roms/`.
+
+However, `coco2` can not be moved - it does not make coco2 work - in fact, there is no coco2 machine:
+
+```none
+Unknown system 'coco2'
+
+"coco2" approximately matches the following
+supported machines (best match first):
+
+coco2b            Color Computer 2B                (Tandy Radio Shack, 1985?)
+coco              Color Computer 1/2               (Tandy Radio Shack, 1980)
+coco2bh           Color Computer 2B (HD6309)       (Tandy Radio Shack, 19??)
+coco3             Color Computer 3 (NTSC)          (Tandy Radio Shack, 1986)
+cocoh             Color Computer 1/2 (HD6309)      (Tandy Radio Shack, 19??)
+coco3h            Color Computer 3 (NTSC; HD6309)  (Tandy Radio Shack, 19??)
+coco3p            Color Computer 3 (PAL)           (Tandy Radio Shack, 1986)
 ```
 
 ### ZX80
