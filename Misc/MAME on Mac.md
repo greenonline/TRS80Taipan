@@ -1,6 +1,33 @@
-### To run, not from command line
-Find **m64**, right click, select,**Package Contents**, and in
-`Contents/Resources/script`
+# Getting MAME running on Mac
+
+## Quick Start
+
+### To run MAME from command line
+
+A set of example commands to boot a Mac SE in MAME:
+
+From [MAME: Trying to Emulate System 6](https://www.emaculation.com/forum/viewtopic.php?t=11247)
+
+```none
+./mame macse -hard1 macsehd.chd -flop1 SSW_6.0.8-800k_Disk1of4.img -flop2 SSW_6.0.8-800k_Disk2of4.img
+```
+I used
+
+```none
+./mame macse -hard1 Mac40MB.chd -flop1 System_Tools.image -flop2 Utilities_1.image
+```
+You only really need
+
+```none
+./mame macse -hard1 Mac40MB.chd -flop1 System_Tools.image
+```
+
+### To run MAME avoiding the command line
+
+If you find the command line a bit daunting, then there is a workaround.
+
+Find [**m64**](https://github.com/bamf2048/bamf2048.github.io/releases/download/M64/M64.app.zip), right click, select,**Package Contents**, and in
+`Contents/Resources/script` place the commands that you use to run the emulator:
 
 ```none
 #!/bin/sh
@@ -11,24 +38,7 @@ cd ~/Downloads/mame0261-x86
 exec ./mame -video opengl
 ```
 
-### To run, from command line
-
-
-Command line SE MAME:
-
-```none
-# From [MAME: Trying to Emulate System 6](https://www.emaculation.com/forum/viewtopic.php?t=11247)
-
-./mame macse -hard1 macsehd.chd -flop1 SSW_6.0.8-800k_Disk1of4.img -flop2 SSW_6.0.8-800k_Disk2of4.img
-
-# I used
-
-./mame macse -hard1 Mac40MB.chd -flop1 System_Tools.image -flop2 Utilities_1.image
-
-# You only need
-
-./mame macse -hard1 Mac40MB.chd -flop1 System_Tools.image
-```
+See also [Tutorial - Running MAME on Mac OS X - Part 1](https://bamf2048.github.io/sdl_mame_tut/)
 
 ## Required files
 
@@ -830,3 +840,4 @@ May be useful (but not read):
  - [Mac MAME Arcade emulation & NeoGeo using OpenEMU and SDLMame for Apple Silicon or Intel Native](https://blog.greggant.com/posts/2021/09/24/mame-on-mac-openemu-sdlmame.html#:~:text=There%20are%20two%20main%20routes,probably%20prefer%20the%20written%20version)
  - [Macintosh SE emulation using lr-mame (GNU/Linux)](https://forums.libretro.com/t/solved-macintosh-se-emulation-using-lr-mame-gnu-linux/44628)
  - [TRS-80 in Mess / Mame - No luck with Disks](https://forums.launchbox-app.com/topic/54899-trs-80-in-mess-mame-no-luck-with-disks/)
+ - 
