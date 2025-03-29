@@ -352,6 +352,22 @@ Also requires:
 
  Note: Corrupted ROMs?
 
+### Apple 2
+
+Using 229 ROMs.
+
+Requires:
+
+ - [`apple2`]()
+ - [`a2diskiing`]()
+ - [`d2fdc.zip`]()
+
+Also requires:
+
+ - `votrsc01a.zip` - which I found in the `Application Support` directory of [Ample](https://github.com/ksherlock/ample). It was *not* in the 229 ROM set.
+
+As does `apple2e`, etc..
+
 ### Atari 400
 
 Using 229 ROMs.
@@ -814,4 +830,3 @@ May be useful (but not read):
  - [Mac MAME Arcade emulation & NeoGeo using OpenEMU and SDLMame for Apple Silicon or Intel Native](https://blog.greggant.com/posts/2021/09/24/mame-on-mac-openemu-sdlmame.html#:~:text=There%20are%20two%20main%20routes,probably%20prefer%20the%20written%20version)
  - [Macintosh SE emulation using lr-mame (GNU/Linux)](https://forums.libretro.com/t/solved-macintosh-se-emulation-using-lr-mame-gnu-linux/44628)
  - [TRS-80 in Mess / Mame - No luck with Disks](https://forums.launchbox-app.com/topic/54899-trs-80-in-mess-mame-no-luck-with-disks/)
- - 
