@@ -1509,23 +1509,108 @@ One probable candidate (this destroys the listing - but only in the first line o
      - `0938- 60 57 10 57 28 01 00 EC`
    - The presence of `00` instead of `EC` *seems* to occur when the font is Olde tyme, after the break - however, not always. It was seen (once) on a Apple //e enhanced, UK machine
      - The break (Ctrl-C) can led to a third character set of not chubby character, nor Olde tyme characters, but characters that look like bits of ships. Unfortunately, the monitor output is unreadable when this third case occurs, due to the character set.
-     - The selection of font is time dependant between (ESC and Ctrl-c) or (break after start up time)? 
+     - The selection of font is time dependant between (ESC and Ctrl-C) or (break after start up time)? 
        - Chubby - (after reboot) wait ESC long time after start up (10+ seconds?), immediate Ctrl-C
+         - Used for the "Mega-micro computers" and "Avalanche Productions Inc." logos, and the "Press 'ESC' key to start" message, on the splash screen.
+         - Similar to *Pinocchio* at [52:52](https://www.youtube.com/watch?v=9EDtnLRuFuU&t=3172) in [0096 Giving my Apple \]\[+ multiple personalities with ROMX+](https://www.youtube.com/watch?v=9EDtnLRuFuU)
        - Chubby Inverted - (after reboot) immediate ESC after start up, immediate Ctrl-C
        - Old Tyme - New boot of fresh machine (unable to reproduce)???
-       - Ships - Ctrl C just as the name your character dialog is started being drawn.
+         - Similar to *Gothic* at [52:08](https://www.youtube.com/watch?v=9EDtnLRuFuU&t=3128) in [0096 Giving my Apple \]\[+ multiple personalities with ROMX+](https://www.youtube.com/watch?v=9EDtnLRuFuU)
+       - Ships - Hit Ctrl-C just as the name your character dialog is started being drawn.
 
 #### Changing fonts
 
-One would think that, see ing as there are additional font sets in the memory, that displaying them would involved simply `POKE`ing a couple of memory locations (or `PEEK`ing a software switch) to set the start of the character set location. Something like this:
+One would think that, seeing as there are additional font sets in the memory, that displaying them would involved simply `POKE`ing a couple of memory locations (or `PEEK`ing a software switch) to set the start of the character set location. Something like this:
 
 ```none
 1 REM PRINT CHAR SET
-5 A=PEEK (49166): FOR N = 0 TO 255: PRINT CHR$(N);: NEXT :A=PEEK (49167): FOR N = 0 TO 255: PRINT CHR$(N);: NEXT:A=PEEK (49166):END```
+5 A=PEEK (49166): FOR N = 0 TO 255: PRINT CHR$(N);: NEXT :A=PEEK (49167): FOR N = 0 TO 255: PRINT CHR$(N);: NEXT:A=PEEK (49166):END
+```
 
-However, it doesn't seeem to work like that.
+However, it doesn't seeem to work like that. Although, at [49:22](https://www.youtube.com/watch?v=9EDtnLRuFuU&t=2962) in [0096 Giving my Apple \]\[+ multiple personalities with ROMX+](https://www.youtube.com/watch?v=9EDtnLRuFuU) ( SW switch is *actually* mentioned at [49:45](https://www.youtube.com/watch?v=9EDtnLRuFuU&t=2985))
 
-An interesting reference is the thread, [Custom character set?](https://www.applefritter.com/content/custom-character-set), in particular the posts of Toby Jennings (#5 nd #7). I makes reference to *Hennig's Font Foundry*, on Nibble magazine Vol 7, disk, [NIB29B.DSK](https://discmaster.textfiles.com/browse/26751/nib29b.dsk), see `CHAR.ED` and `CHAR.GEN`.
+An interesting reference is the thread, [Custom character set?](https://www.applefritter.com/content/custom-character-set), in particular the posts of Toby Jennings (#5 and #7). It makes reference to *Hennig's Font Foundry*, on Nibble magazine Vol 7, disk, [NIB29B.DSK](https://discmaster.textfiles.com/browse/26751/nib29b.dsk), see `CHAR.ED` and `CHAR.GEN`.
+
+At [53:32](https://www.youtube.com/watch?v=9EDtnLRuFuU&t=3212) in [0096 Giving my Apple \]\[+ multiple personalities with ROMX+](https://www.youtube.com/watch?v=9EDtnLRuFuU), some BASIC code is provided (that may only work with the custom character ROMX+):
+
+```none
+340 POKE 785, C+16: REM SET TEXTBANK (FB1n)
+345 X = PEEK (49376): REM ZIP CHIP fix (hit $C0E0)
+350 CALL 768: REM AND CHANGE IT
+```
+
+Note that line 345 is not required.
+
+Also at [54:28](https://www.youtube.com/watch?v=9EDtnLRuFuU&t=3268) in [0096 Giving my Apple \]\[+ multiple personalities with ROMX+](https://www.youtube.com/watch?v=9EDtnLRuFuU), the code to set up the `CALL 768`:
+
+```none
+810 FOR I = 0 TO 23: READ N: POKE 768 +I,N : NEXT
+820 DATA 72,44,202.250.44.202.250,44,254,250,173
+830 DATA 46,208,141,24,3,44,16,248,104,44,81,248,96
+840 RETURN
+```
+
+This code is
+
+```none
+300: 48 2C CA FA 2C CA FA 2C
+308: FE FA AD 2E D0 8D 18 03
+310: 2C 10 F8 68 2C 51 F8 60
+```
+
+Using labels
+
+```none
+CHNGTXT = $0300
+SELBNK0 = $0301
+
+MAINBKSW = $F851
+TXTBANK0 = $F810
+```
+
+Assembler:
+
+```none
+ MAINBKSW = $F851
+ TXTBANK0 = $F810
+
+                            * = $0300
+0300   48         CHNGTXT   PHA
+0301   2C CA FA   SELBNK0   BIT $FACA
+0304   2C CA FA             BIT $FACA
+0307   2C FE FA             BIT $FAFE
+030A   AD 2E D0             LDA $D02E
+030D   8D 18 03             STA $0318
+0310   2C 10 F8             BIT TXTBANK0
+0313   68                   PLA
+0314   2C 51 F8             BIT MAINBKSW
+0317   60                   RTS
+                            .END
+
+;defined symbols used as labels
+ MAINBKSW   $F851
+ TXTBANK0   $F810
+ CHNGTXT    $0300
+ SELBNK0    $0301
+```
+
+##### Explaining labels
+
+According to [S-C DocuMentor — Applesoft](https://w.txbobsc.com/scsc/scdocumentor/definitions.html)
+
+```none
+FCFA-          2550 MON.RD2BIT       .EQ $FCFA
+```
+
+According to the user guide for [ROMXce](https://jdmicro.com/documentation/romxce/ROMXce+%20API%20Reference.pdf), page 2,
+
+> $FACA	$FACA	$FAFE			(immediately switches to Bank 0)
+
+According to the user guide for [ROMXce](https://jdmicro.com/documentation/romxce/ROMXce+%20API%20Reference.pdf), page 3, `$F851` is a SW switch that selects the Main Bank (whereas `$F850` selects the "Temporary Bank").
+
+`F810` is used to set the Text ROM bank to 0. From page 4 of [ROMXce](https://jdmicro.com/documentation/romxce/ROMXce+%20API%20Reference.pdf)
+
+> If you have  an optional ROMX Text ROM board installed, while in Bank 0 accessing any address in the range $F81x will preset the Main Text ROM Bank to x (where x is 0-9,A-F). The font will change when exiting Bank 0. If no Text board is installed, this will have no effect. $F815 presets the Main Text ROM to Bank 5.
 
 ### Random, uncalled, code
 
