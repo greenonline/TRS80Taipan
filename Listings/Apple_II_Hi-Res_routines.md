@@ -4075,3 +4075,65 @@ Using the HRCG can result in a different scrolling behavior when listing program
 The Animatix program, part of the Applesoft Toolkit, is used to create and edit character sets for the HRCG. This program allows you to define 7-by-8 pixel images for each character. 
 > 7. Character ROM:
 The Apple II's character set for text mode (40 columns) is stored in the Character ROM on the mainboard. You can swap this ROM with a custom EPROM to change the character set, but you cannot dynamically change it during runtime. 
+
+
+## Binary files
+
+From [Programmatically finding address of loaded binary?](https://www.reddit.com/r/apple2/comments/ud50u1/programmatically_finding_address_of_loaded_binary/)
+
+
+> under DOS 3.3 AA72.AA73 will contain the last BLOAD address.
+
+and
+
+> AA60.AA61 holds the last BLOAD length.
+
+From [this post](https://www.reddit.com/r/apple2/comments/ud50u1/comment/i6fnuxa/):
+
+> One of the dumb design decisions in DOS 3.x was to save 4 bytes of meta data as the first four bytes of the binary file itself (Low/High Address and Low/High Length) instead of in the catalog which contains all the other meta data such as filename, FTOC, size, etc. See [Figure 4.8](https://mirrors.apple2.org.za/Apple%20II%20Documentation%20Project/Books/Beneath%20Apple%20DOS.pdf) of the original *Beneath Apple DOS* or [Page 42](https://archive.org/details/beneath-apple-dos-prodos-2020/page/42/mode/2up) of *Beneath Apple DOS ProDOS 2020*.
+> 
+> Here are the "Peeks N Pokes" for DOS 3.3 `BLOAD`
+> 
+> |Address	|Description|
+> |---|---|
+> |AA60.AA61	|Last BLOAD Length|
+> |AA72.AA73	|Last BLOAD Address|
+> 
+> From AppleSoft
+> 
+> ```none
+> ?PEEK(43616)+PEEK(43617)*256
+> ?PEEK(43634)+PEEK(43635)*256
+> ```
+> 
+> From the Monitor:
+> 
+> ```none
+> CALL-151
+> AA72.AA73
+> AA60.AA61
+> ```
+> The original source code has these shitty variable names. (I've also included my annotations.)
+> 
+> ```none
+2A60:00 00          022 SVBL        DFB 0,0                                         ; SaVed Binary Length $AA60:Length of last BLOAD, BSAVE
+2A62:00             023 SVCMD       DFB 0                                           ; SaVed CoMmanD
+2A63:00             024 TEMP1A      DFB 0
+2A64:00             025 TEMP2A      DFB 0
+2A65:00             026 INOPTS      DFB 0           ; INPUT OPTIONS
+                    027 CUROPT      EQU *           ; CURRENT OPTIONS               ; /sarcasm So we can type CUR ... but too lazy to type CUR_VOL, CUR_DRV, CUR_SLT??
+                                                                                    ; Note: OPTAB3 and CUROPT must be keep in size sync! 
+2A66:00 00          028 CV          DW 0            ; VOLUME                        ; [0] normally wastes 1 byte; all numbers 16-bit, See CMDSCAN, Line #239
+2A68:00 00          029 CD          DW 0            ; DRIVE                         ; [2] normally wastes 1 byte, all numbers 16-bit, /sarcasm because DBINIT, OPNSUP
+2A6A:00 00          030 CS          DW 0            ; SLOT                          ; [4] normally wastes 1 byte, all numbers 16-bit,      need 2 bytes bytes, right?
+2A6C:01 00          031 CL          DW 1            ; RECORD LENGTH                 ; [6]               
+2A6E:00 00          032 CR          DW 0            ; RECORD NUMBER                 ; [8] Not Carriage Return, but Current Record. /sarcasm Obvious, right?
+2A70:00 00          033 CB          DW 0            ; RECORD BYTE                   ; [A]
+2A72:00 00          034 CA          DW 0            ; ADDRESS                       ; [C] $AA72:Address of last BLOAD
+> ```
+ 
+ 
+
+
+
+
