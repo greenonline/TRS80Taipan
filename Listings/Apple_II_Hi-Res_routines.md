@@ -151,7 +151,7 @@ There are four additional routines that are not called from BASIC, but from with
 Note that, due to the surrounding "junk" code, disassembly can range from `$0838` to `$0B0C` (or `$0B3C`, if you wish to include the unknown maths subroutine.
 
 
-## The Code
+## The Code - by section
 
 ### GENERAL INPUT
 `CALL 2200` (`0x0898`)
@@ -991,7 +991,7 @@ C84C000B60000000
  L0B00      $0B00
 ```
 
-## Additional code
+## Additional internal code sections
 
 Additional code that is called internally, from the assembly listing, rather than externally from BASIC.
 
@@ -1081,6 +1081,8 @@ See above.
 ### Unknown maths routine
 
 `CALL 2680` (`0x0B10`)
+
+Range: `0x0B10` - `0x0B3C`
 
 At first glance, this routine doesn't seem to be called from anywhere, either externally, or from within the machine code. Is it an orphaned routine?
 
@@ -1442,7 +1444,7 @@ RWTS     = $B7B5
 ```
 
 
-## The whole thing
+## The Code - The whole thing
 
 The entire block of code from `0x0898` to `0x0B0F` (plus the preceeding `0x0838` to `0x086F`.
 
@@ -1518,104 +1520,15 @@ One probable candidate (this destroys the listing - but only in the first line o
          - Similar to *Gothic* at [52:08](https://www.youtube.com/watch?v=9EDtnLRuFuU&t=3128) in [0096 Giving my Apple \]\[+ multiple personalities with ROMX+](https://www.youtube.com/watch?v=9EDtnLRuFuU)
        - Ships - Hit Ctrl-C just as the name your character dialog is started being drawn.
 
-#### Changing fonts
+### Random, uncalled, code blocks
 
-One would think that, seeing as there are additional font sets in the memory, that displaying them would involved simply `POKE`ing a couple of memory locations (or `PEEK`ing a software switch) to set the start of the character set location. Something like this:
-
-```none
-1 REM PRINT CHAR SET
-5 A=PEEK (49166): FOR N = 0 TO 255: PRINT CHR$(N);: NEXT :A=PEEK (49167): FOR N = 0 TO 255: PRINT CHR$(N);: NEXT:A=PEEK (49166):END
-```
-
-However, it doesn't seeem to work like that. Although, at [49:22](https://www.youtube.com/watch?v=9EDtnLRuFuU&t=2962) in [0096 Giving my Apple \]\[+ multiple personalities with ROMX+](https://www.youtube.com/watch?v=9EDtnLRuFuU) ( SW switch is *actually* mentioned at [49:45](https://www.youtube.com/watch?v=9EDtnLRuFuU&t=2985))
-
-An interesting reference is the thread, [Custom character set?](https://www.applefritter.com/content/custom-character-set), in particular the posts of Toby Jennings (#5 and #7). It makes reference to *Hennig's Font Foundry*, on Nibble magazine Vol 7, disk, [NIB29B.DSK](https://discmaster.textfiles.com/browse/26751/nib29b.dsk), see `CHAR.ED` and `CHAR.GEN`.
-
-At [53:32](https://www.youtube.com/watch?v=9EDtnLRuFuU&t=3212) in [0096 Giving my Apple \]\[+ multiple personalities with ROMX+](https://www.youtube.com/watch?v=9EDtnLRuFuU), some BASIC code is provided (that may only work with the custom character ROMX+):
-
-```none
-340 POKE 785, C+16: REM SET TEXTBANK (FB1n)
-345 X = PEEK (49376): REM ZIP CHIP fix (hit $C0E0)
-350 CALL 768: REM AND CHANGE IT
-```
-
-Note that line 345 is not required.
-
-Also at [54:28](https://www.youtube.com/watch?v=9EDtnLRuFuU&t=3268) in [0096 Giving my Apple \]\[+ multiple personalities with ROMX+](https://www.youtube.com/watch?v=9EDtnLRuFuU), the code to set up the `CALL 768`:
-
-```none
-810 FOR I = 0 TO 23: READ N: POKE 768 +I,N : NEXT
-820 DATA 72,44,202.250.44.202.250,44,254,250,173
-830 DATA 46,208,141,24,3,44,16,248,104,44,81,248,96
-840 RETURN
-```
-
-This code is
-
-```none
-300: 48 2C CA FA 2C CA FA 2C
-308: FE FA AD 2E D0 8D 18 03
-310: 2C 10 F8 68 2C 51 F8 60
-```
-
-Using labels
-
-```none
-CHNGTXT = $0300
-SELBNK0 = $0301
-
-MAINBKSW = $F851
-TXTBANK0 = $F810
-```
-
-Assembler:
-
-```none
- MAINBKSW = $F851
- TXTBANK0 = $F810
-
-                            * = $0300
-0300   48         CHNGTXT   PHA
-0301   2C CA FA   SELBNK0   BIT $FACA
-0304   2C CA FA             BIT $FACA
-0307   2C FE FA             BIT $FAFE
-030A   AD 2E D0             LDA $D02E
-030D   8D 18 03             STA $0318
-0310   2C 10 F8             BIT TXTBANK0
-0313   68                   PLA
-0314   2C 51 F8             BIT MAINBKSW
-0317   60                   RTS
-                            .END
-
-;defined symbols used as labels
- MAINBKSW   $F851
- TXTBANK0   $F810
- CHNGTXT    $0300
- SELBNK0    $0301
-```
-
-##### Explaining labels
-
-According to [S-C DocuMentor — Applesoft](https://w.txbobsc.com/scsc/scdocumentor/definitions.html)
-
-```none
-FCFA-          2550 MON.RD2BIT       .EQ $FCFA
-```
-
-According to the user guide for [ROMXce](https://jdmicro.com/documentation/romxce/ROMXce+%20API%20Reference.pdf), page 2,
-
-> $FACA	$FACA	$FAFE			(immediately switches to Bank 0)
-
-According to the user guide for [ROMXce](https://jdmicro.com/documentation/romxce/ROMXce+%20API%20Reference.pdf), page 3, `$F851` is a SW switch that selects the Main Bank (whereas `$F850` selects the "Temporary Bank").
-
-`F810` is used to set the Text ROM bank to 0. From page 4 of [ROMXce](https://jdmicro.com/documentation/romxce/ROMXce+%20API%20Reference.pdf)
-
-> If you have  an optional ROMX Text ROM board installed, while in Bank 0 accessing any address in the range $F81x will preset the Main Text ROM Bank to x (where x is 0-9,A-F). The font will change when exiting Bank 0. If no Text board is installed, this will have no effect. $F815 presets the Main Text ROM to Bank 5.
-
-### Random, uncalled, code
-
-Random (maths) Code:
- - `0x0B10` - `0x0B3C`
+ - Random (maths) Code:
+   - At decimal location: `2680`
+   - Range: `0x0B10` - `0x0B3C`
+ - UNKNWN2:
+   - At decimal location: `2528` 
+   - Range: `0x09E0` - `0x09F8`
+ - Aren't there others?
 
 ### The entire code block
 
@@ -4038,6 +3951,127 @@ The "original" code:
 09E8: 20 BE DE 20 7B DD 20 FB
 09F0: E6 68 20 5C DB CA D0 FA
 09F8: 60
-
-
 ```
+
+
+## Changing fonts
+
+How does one change the font set?
+
+One would think that, seeing as there are additional font sets in the memory, that displaying them would involved simply `POKE`ing a couple of memory locations (or `PEEK`ing a software switch) to set the start of the character set location. Something like this:
+
+```none
+1 REM PRINT CHAR SET
+5 A=PEEK (49166): FOR N = 0 TO 255: PRINT CHR$(N);: NEXT :A=PEEK (49167): FOR N = 0 TO 255: PRINT CHR$(N);: NEXT:A=PEEK (49166):END
+```
+
+However, it doesn't seeem to work like that. Although, at [49:22](https://www.youtube.com/watch?v=9EDtnLRuFuU&t=2962) in [0096 Giving my Apple \]\[+ multiple personalities with ROMX+](https://www.youtube.com/watch?v=9EDtnLRuFuU) (a SW switch is *actually* mentioned at [49:45](https://www.youtube.com/watch?v=9EDtnLRuFuU&t=2985))
+
+An interesting reference is the thread, [Custom character set?](https://www.applefritter.com/content/custom-character-set), in particular the posts of Toby Jennings (#5 and #7). It makes reference to *Hennig's Font Foundry*, on Nibble magazine Vol 7, disk, [NIB29B.DSK](https://discmaster.textfiles.com/browse/26751/nib29b.dsk), see `CHAR.ED` and `CHAR.GEN`.
+
+### The ROMX solution
+
+At [53:32](https://www.youtube.com/watch?v=9EDtnLRuFuU&t=3212) in [0096 Giving my Apple \]\[+ multiple personalities with ROMX+](https://www.youtube.com/watch?v=9EDtnLRuFuU), some BASIC code is provided (that may only work with the custom character ROMX+):
+
+```none
+340 POKE 785, C+16: REM SET TEXTBANK (FB1n)
+345 X = PEEK (49376): REM ZIP CHIP fix (hit $C0E0)
+350 CALL 768: REM AND CHANGE IT
+```
+
+Note that line 345 is not required.
+
+Also at [54:28](https://www.youtube.com/watch?v=9EDtnLRuFuU&t=3268) in [0096 Giving my Apple \]\[+ multiple personalities with ROMX+](https://www.youtube.com/watch?v=9EDtnLRuFuU), the code to set up the `CALL 768`:
+
+```none
+810 FOR I = 0 TO 23: READ N: POKE 768 +I,N : NEXT
+820 DATA 72,44,202.250.44.202.250,44,254,250,173
+830 DATA 46,208,141,24,3,44,16,248,104,44,81,248,96
+840 RETURN
+```
+
+This code is
+
+```none
+300: 48 2C CA FA 2C CA FA 2C
+308: FE FA AD 2E D0 8D 18 03
+310: 2C 10 F8 68 2C 51 F8 60
+```
+
+Using labels
+
+```none
+CHNGTXT = $0300
+SELBNK0 = $0301
+
+MAINBKSW = $F851
+TXTBANK0 = $F810
+```
+
+Assembler:
+
+```none
+ MAINBKSW = $F851
+ TXTBANK0 = $F810
+
+                            * = $0300
+0300   48         CHNGTXT   PHA
+0301   2C CA FA   SELBNK0   BIT $FACA
+0304   2C CA FA             BIT $FACA
+0307   2C FE FA             BIT $FAFE
+030A   AD 2E D0             LDA $D02E
+030D   8D 18 03             STA $0318
+0310   2C 10 F8             BIT TXTBANK0
+0313   68                   PLA
+0314   2C 51 F8             BIT MAINBKSW
+0317   60                   RTS
+                            .END
+
+;defined symbols used as labels
+ MAINBKSW   $F851
+ TXTBANK0   $F810
+ CHNGTXT    $0300
+ SELBNK0    $0301
+```
+
+#### Derivation of the "ROMX" labels
+
+According to [S-C DocuMentor — Applesoft](https://w.txbobsc.com/scsc/scdocumentor/definitions.html)
+
+```none
+FCFA-          2550 MON.RD2BIT       .EQ $FCFA
+```
+
+According to the user guide for [ROMXce](https://jdmicro.com/documentation/romxce/ROMXce+%20API%20Reference.pdf), page 2,
+
+> $FACA	$FACA	$FAFE			(immediately switches to Bank 0)
+
+According to the user guide for [ROMXce](https://jdmicro.com/documentation/romxce/ROMXce+%20API%20Reference.pdf), page 3, `$F851` is a SW switch that selects the Main Bank (whereas `$F850` selects the "Temporary Bank").
+
+`F810` is used to set the Text ROM bank to 0. From page 4 of [ROMXce](https://jdmicro.com/documentation/romxce/ROMXce+%20API%20Reference.pdf)
+
+> If you have  an optional ROMX Text ROM board installed, while in Bank 0 accessing any address in the range $F81x will preset the Main Text ROM Bank to x (where x is 0-9,A-F). The font will change when exiting Bank 0. If no Text board is installed, this will have no effect. $F815 presets the Main Text ROM to Bank 5.
+
+
+### AI response for changing fonts
+
+I got this from [this google serch](https://www.google.com/search?q=setting+applesoft+character+set&oq=setting+applesoft+character+set&gs_lcrp=EgZjaHJvbWUyBggAEEUYOTIHCAEQIRigATIHCAIQIRiPAtIBCDg2MDdqMGo3qAIIsAIB&sourceid=chrome&ie=UTF-8):
+
+>To change the character set in Applesoft, you typically use the LOADHRCG command and load a character set file, followed by a control-A command with the appropriate number to select the desired character set. The Apple II character set is stored in the Character ROM and can be modified by swapping the EPROM. 
+> 
+> Elaboration:
+> 
+> 1. Loading Character Sets:
+Applesoft allows you to load alternate character sets, which are stored in files. You can load these files using the LOADHRCG command, prompting for the filename. 
+> 2. Selecting Character Sets:
+Once the character sets are loaded, you can select the one you want to use by typing CTRL-A followed by the number (1-9) of the alternate character set. Ignoring the "SYNTAX ERROR" message that results from this command is necessary, as it's not a standard BASIC command. 
+> 3. Suppressing the Error Message:
+To suppress the syntax error message, you can type CTRL-A n CTRL-X (with no spaces). 
+> 4. Returning to the Standard Character Set:
+To revert to the default character set, type CTRL-A 0 CTRL-X. 
+> 5. Hi-Res Character Generator (HRCG):
+Using the HRCG can result in a different scrolling behavior when listing programs, scrolling one bit at a time instead of one line. 
+> 6. Animating Character Sets:
+The Animatix program, part of the Applesoft Toolkit, is used to create and edit character sets for the HRCG. This program allows you to define 7-by-8 pixel images for each character. 
+> 7. Character ROM:
+The Apple II's character set for text mode (40 columns) is stored in the Character ROM on the mainboard. You can swap this ROM with a custom EPROM to change the character set, but you cannot dynamically change it during runtime. 
