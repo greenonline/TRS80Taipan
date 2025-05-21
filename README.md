@@ -29,3 +29,6 @@ This reprository contains:
 
 ## Related
 - [Taipan_40_Column_Apple_II](https://github.com/greenonline/Taipan_40_Column_Apple_II/)
+- [BBCTaipan](https://github.com/greenonline/BBCTaipan)
+- [MacTaipan](https://github.com/greenonline/MacTaipan)
+- [MMBASICTaipan](https://github.com/greenonline/MMBASICTaipan)
