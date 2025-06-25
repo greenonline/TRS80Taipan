@@ -344,13 +344,13 @@ sed '1,3d' Taipan_TRS80-orig.txt | sed '$d'|sed '$d'|sed '$d' | sed -E 's/^ ([0-
 2442 IF J = 1 THEN MM(2,I) = CP(I)
 20029 FOR I = 1 TO 4: PRINT  TAB( 4); LEFT$ (CO$(I),7);"Min: ";MM(1,I); TAB( 18);"Max: ";MM(2,I): NEXT I
 
-# Maximum number of pirates
+# Record of maximum number of pirates (to display at game end) - ND
 5005 IF SN > MP THEN MP = SN
 10143 MG=0:MC=0:MP=0
 20028 PRINT "Max pirates: ";MP
 
-# Auto bank half of the cash
-# TBA???
+# Auto bank half of the cash - when in Hong Kong - ND
+1015 IF LO=1 THEN BA = BA + CA/2: CA = CA/2
 
 #
 # Records - ND
