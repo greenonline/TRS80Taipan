@@ -23,6 +23,9 @@ This reprository contains:
  - Some media (cassette/disk) containing the code
  - A guide to [using MAME on macOS](https://github.com/greenonline/TRS80Taipan/blob/main/Misc/MAME%20on%20Mac.md)
  - A guide to [LisaEm](https://github.com/greenonline/TRS80Taipan/blob/main/Misc/LisaEmSetUp.md)
+ - [Hacks for the low resolution, 40 column, version of Taipan!](https://github.com/greenonline/TRS80Taipan/blob/main/Misc/Hacks/)
+   - Optional debt
+   - Banking feature
 
 ## See also 
 - [Taipan for TRS-80](https://gr33nonline.wordpress.com/2024/12/23/taipan-for-trs-80/)
