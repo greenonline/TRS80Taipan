@@ -86,8 +86,9 @@ Better this which skips the GOSUB 590:
 #### Non-Destructive (AS)
 ```none
 49 FOR I = 0 TO 9:READ LO(I):NEXT I:D = 1000: Y=1860: GT = 1: C=400:MW = 50:SH = MW:SR = 1: G=1:V(0) = 1: GOSUB 5000: X$ ="": HOME:GOTO 120: REM HACK
-CHEAT: Start with no debt
 ```
+### CHEAT: Start with no debt
+
 Supercede line 50 with line 49 and initialise `D` to zero, rather than `1000`.
 
 Note the following is a combined fix with **No spacebar at splash above**, with the `GOSUB 590` removed.
