@@ -169,9 +169,13 @@ As MMBASIC has a number of flaws, with one of them being that you can't just pas
 #### For BBC BASIC
 
 ```none
-Not complete yet
+Not yet complete
 ```
 
+## See also
+
+ - [Adding a Bank to the low res version of Taipan!][7]
+ - [Removing the debt from the low res version of Taipan!][8]
 
 
   [1]: https://mirrors.apple2.org.za/ftp.apple.asimov.net/images/games/simulation/taipan%2B.dsk
@@ -180,3 +184,5 @@ Not complete yet
   [4]: https://github.com/greenonline/TRS80Taipan/blob/main/Misc/Hacks/MMBASIC/MMBASICTaipan_Debt.bas
   [5]: https://github.com/greenonline/TRS80Taipan/blob/main/Misc/Hacks/MMBASIC/MMBASICTaipan_Bank.bas
   [6]: https://github.com/greenonline/TRS80Taipan/blob/main/Misc/Hacks/MMBASIC/MMBASICTaipan_DebtBank.bas
+  [7]: https://gr33nonline.wordpress.com/2025/05/31/adding-a-bank-to-the-low-res-version-of-taipan/
+  [8]: https://gr33nonline.wordpress.com/2025/06/24/removing-the-debt-from-the-low-res-version-of-taipan/
