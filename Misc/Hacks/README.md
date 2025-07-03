@@ -177,6 +177,6 @@ Not complete yet
   [1]: https://mirrors.apple2.org.za/ftp.apple.asimov.net/images/games/simulation/taipan%2B.dsk
   [2]: https://taipangame.com
   [3]: https://taipangame.com/pdf/TaipanAHistoricalAdventureForTheAppleComputerAppleIIEdition.pdf
-  [4]: https://https://github.com/greenonline/TRS80Taipan/new/main/Misc/Hacks/MMBASIC/MMBASICTaipan_Debt.bas
-  [5]: https://https://github.com/greenonline/TRS80Taipan/new/main/Misc/Hacks/MMBASIC/MMBASICTaipan_Bank.bas
-  [6]: https://https://github.com/greenonline/TRS80Taipan/new/main/Misc/Hacks/MMBASIC/MMBASICTaipan_DebtBank.bas
+  [4]: https://github.com/greenonline/TRS80Taipan/blob/main/Misc/Hacks/MMBASIC/MMBASICTaipan_Debt.bas
+  [5]: https://github.com/greenonline/TRS80Taipan/blob/main/Misc/Hacks/MMBASIC/MMBASICTaipan_Bank.bas
+  [6]: https://github.com/greenonline/TRS80Taipan/blob/main/Misc/Hacks/MMBASIC/MMBASICTaipan_DebtBank.bas
