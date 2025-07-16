@@ -169,8 +169,56 @@ As MMBASIC has a number of flaws, with one of them being that you can't just pas
 #### For BBC BASIC
 
 ```none
-Not yet complete
+44 BANK = 0
+
+140 PRINT TAB(0,1) "CASH ";: Q = C:GOSUB 1330: PRINT TAB(15,1) "BANK ";: Q = BANK:GOSUB 1330:PRINT TAB(27,1) "GUNS ";G: PRINT TAB(0,2) "DEBT ";: Q = D:GOSUB 1330:PRINT TAB(27,2) "HOLD ";: Q = SH:GOSUB 1330
+
+165 BANK = INT (BANK + BANK * (0.005/30)*ET)
+
+355 REM OTHER OPTIONS (360-381)
+360 GOSUB 130: GOSUB 1340:VTAB=11:INVERSE=0:PRINT A$:NORMAL=0:PRINT TAB(0,11) " T)RADE, R)ECORDS" ; :IF L = 0 THEN PRINT ", L)ENDER, G)ODOWN, B)ANK OR E)MBARK?":PRINT: PRINT A$
+361 IF L <> 0 THEN PRINT " OR E)MBARK?": PRINT:PRINT: PRINT A$;
+370 GOSUB 60:IF (X$ = "G" OR X$ = "g") AND L = 0 THEN X = 1
+371 IF X$ = "T" OR X$ = "t" THEN GOTO 120
+372 IF X$="R" OR X$ = "r" THEN X=2
+373 IF X$="L" OR X$ = "l" THEN X=3
+374 IF X$="E" OR X$ = "e" THEN GOTO 730
+375 IF (X$="B" OR X$ = "b") AND L = 0 THEN X=4
+376 IF ((X$ <> "G" AND X$ <> "g") OR L<>0) AND ((X$ <> "B" AND X$ <> "b") OR L<>0) AND X$ <> "T" AND X$<> "R" AND X$ <> "L" AND X$ <> "E" AND X$ <> "t" AND X$<> "r" AND X$ <> "l" AND X$ <> "e" THEN GOSUB 770: GOTO 370
+376 IF (X$ <> "G" OR L<>0) AND (X$ <> "B" OR L<>0) AND X$ <> "T" AND X$<> "R" AND X$ <> "L" AND X$ <> "E" THEN GOSUB 770: GOTO 370
+
+
+381 IF X <> 3 OR L = 0 THEN ON X GOSUB 390,600,470,2000: GOTO 360
+
+
+1300 HOME:NW = C + BANK - D:Q = NW / GT: VTAB=4: INVERSE=0: PRINT TAB(0,4) A$;: NORMAL=0: PRINT:PRINT "YOUR SCORE, BASED UPON TIME AND YOUR": PRINT "NET WORTH (EXCLUDING STOCK) IS ";: GOSUB 1330:INVERSE: PRINT A$: NORMAL=0
+1305 PRINT " BANK: " BANK: PRINT "CASH: " C: PRINT "DEBT: " D: PRINT "GAME TIME: " GT
+
+2000 REM VISIT BANK ROUTINE (2000-2190)
+2005 REM DEPOSIT
+
+2010 REM PRINT TAB(0,11) A$: VTAB=14: PRINT TAB(0,12) A$ : PRINT TAB(0,11) "HOW MUCH WILL YOU DEPOSIT?";
+2020 PRINT TAB(0,11) A$: PRINT TAB(0,12) A$:  PRINT TAB(0,13) A$ : PRINT TAB(0,11) "BANK: " BANK:  PRINT TAB(0,12) "----------------------": PRINT TAB(0,13) "HOW MUCH WILL YOU DEPOSIT?";
+
+2030 NUM$="": GOSUB 310
+2040 IF X$ = "A" THEN PRINT CHR$ (8);: INVERSE=0:PRINT "ALL"; : NORMAL=0: NUM = C
+2050 IF X$ <> "A" THEN NUM = VAL (NUM$)
+2060 IF NUM <= C THEN BANK = BANK + NUM: C = C - NUM: GOSUB 130: GOTO 2100
+2070 GOSUB 760
+2100 REM WITHDRAW
+
+2110 REM PRINT TAB(0,11) A$: VTAB=14: PRINT TAB(0,12) A$ : PRINT TAB(0,11) "HOW MUCH WILL YOU WITHDRAW?";
+2120 PRINT TAB(0,11) A$:  PRINT TAB(0,12) A$: PRINT TAB(0,13) A$ : PRINT TAB(0,11) "BANK: " BANK: PRINT TAB(0,12) "----------------------": PRINT TAB(0,13) "HOW MUCH WILL YOU WITHDRAW?";
+
+2130 NUM$="": GOSUB 310
+2140 IF X$ = "A" THEN PRINT CHR$ (8);: INVERSE=0:PRINT "ALL"; : NORMAL=0: NUM = BANK
+2150 IF X$ <> "A" THEN NUM = VAL (NUM$)
+2160 IF NUM <= BANK THEN BANK = BANK - NUM: C = C + NUM: GOSUB 130: GOTO 2190
+2170 GOSUB 760
+2190 RETURN: REM LEAVE BANK
 ```
+
+Related: [Notes pertaining to adding the Bank feature to the BBC BASIC version of Taipan][9]
 
 ## See also
 
@@ -186,3 +234,4 @@ Not yet complete
   [6]: https://github.com/greenonline/TRS80Taipan/blob/main/Misc/Hacks/MMBASIC/MMBASICTaipan_DebtBank.bas
   [7]: https://gr33nonline.wordpress.com/2025/05/31/adding-a-bank-to-the-low-res-version-of-taipan/
   [8]: https://gr33nonline.wordpress.com/2025/06/24/removing-the-debt-from-the-low-res-version-of-taipan/
+  [9]: https://github.com/greenonline/TRS80Taipan/blob/main/Misc/Hacks/xtras/BBCBASIC_Taipan_Bank_Issues.md
