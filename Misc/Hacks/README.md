@@ -4,8 +4,8 @@
 
 The [Hi-Res version][1] of [Taipan!][2] has two features that the [40 column version of Taipan][3] does not:
 
+ - Option of starting with debt or not, and
  - Banking
- - Option of starting with debt or not.
 
 I have added these two features to the 40 column version for Apple II, as well as for the ports to  MMBASIC and BBC BASIC.
 
@@ -226,6 +226,39 @@ Notes:
 
 Related: [Notes pertaining to adding the Bank feature to the BBC BASIC version of Taipan][9]
 
+##### Adding a banking menu
+
+Instead of the `REM`-ming of the mutually exclusive lines 2010/2020 and 2110/2120, we can add a "constant", or switch, to switch the functionality of the lines that print the bank balance, both in the stats and during the bank visit.
+
+For the stats
+
+```none
+139 IF DISPLAYBANK=0 THEN PRINT TAB(0,1) "CASH ";: Q = C:GOSUB 1330: PRINT TAB(27,1) "GUNS ";G: PRINT TAB(0,2) "DEBT ";: Q = D:GOSUB 1330:PRINT TAB(27,2) "HOLD ";: Q = SH:GOSUB 1330
+140 IF DISPLAYBANK THEN PRINT TAB(0,1) "CASH ";: Q = C:GOSUB 1330: PRINT TAB(15,1) "BANK ";: Q = BANK:GOSUB 1330:PRINT TAB(27,1) "GUNS ";G: PRINT TAB(0,2) "DEBT ";: Q = D:GOSUB 1330:PRINT TAB(27,2) "HOLD ";: Q = SH:GOSUB 1330
+```
+
+For the bank
+```none
+2010 IF DISPLAYBANK THEN PRINT TAB(0,11) A$: VTAB=14: PRINT TAB(0,12) A$ : PRINT TAB(0,11) "HOW MUCH WILL YOU DEPOSIT?";
+2020 IF DISPLAYBANK=0 THEN PRINT TAB(0,11) A$: PRINT TAB(0,12) A$:  PRINT TAB(0,13) A$ : PRINT TAB(0,11) "BANK: " BANK:  PRINT TAB(0,12) "----------------------": PRINT TAB(0,13) "HOW MUCH WILL YOU DEPOSIT?";
+```
+and
+```none
+2110 IF DISPLAYBANK THEN PRINT TAB(0,11) A$: VTAB=14: PRINT TAB(0,12) A$ : PRINT TAB(0,11) "HOW MUCH WILL YOU WITHDRAW?";
+2120 IF DISPLAYBANK=0 THEN PRINT TAB(0,11) A$:  PRINT TAB(0,12) A$: PRINT TAB(0,13) A$ : PRINT TAB(0,11) "BANK: " BANK: PRINT TAB(0,12) "----------------------": PRINT TAB(0,13) "HOW MUCH WILL YOU WITHDRAW?";
+```
+The switch can be set in one of two ways:
+
+ - Manually
+   ```none
+   43 DISPLAYBANK=0 : REM CHANGE TO 1 IF YOU WANT BANK BALANCE DISPLAYED IN THE STATS
+   ```
+ - Via an additional start menu (which could quickly become annoying, especially if you *always* chose the *same* option)
+   ```none
+   41 VDU12: PRINT TAB(0,6); "Do you wish to show . . .": PRINT: PRINT "  1) Bank balance in the stats": PRINT: PRINT "                >> or <<":PRINT: PRINT "  2) Bank balance only when visiting the bank"
+   42 GOSUB 60: IF X$="2" THEN DISPLAYBANK=0
+   43 IF X$ <>"1" THEN GOTO 42 ELSE DISPLAYBANK=1
+   ```
 ## See also
 
  - [Adding a Bank to the low res version of Taipan!][7]
