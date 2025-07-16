@@ -81,14 +81,7 @@ As MMBASIC has a number of flaws, with one of them being that you can't just pas
 
 2000 REM VISIT BANK ROUTINE (2000-2190)
 2005 REM DEPOSIT
-2010 REM VTAB 13: HTAB 1
-2020 PRINT "HOW MUCH WILL YOU DEPOSIT?                                            "
-2020 PRINT "HOW MUCH WILL YOU DEPOSIT?"
-2020 VTAB 13: HTAB 1 : PRINT "HOW MUCH WILL YOU DEPOSIT?"
-2020 VTAB 11:INVERSE:PRINT A$:NORMAL: PRINT A$: PRINT A$: PRINT A$: PRINT A$: PRINT A$: VTAB 13: PRINT "HOW MUCH WILL YOU DEPOSIT?"
-2020 VTAB 11:INVERSE:PRINT A$:NORMAL: PRINT: PRINT: PRINT : PRINT : PRINT : VTAB 13: PRINT "HOW MUCH WILL YOU DEPOSIT?"
-2020 VTAB 11:INVERSE:PRINT A$:NORMAL: VTAB 13 : PRINT A$: VTAB 14: PRINT A$ : VTAB 13: PRINT "HOW MUCH WILL YOU DEPOSIT?"
-2020 VTAB 13 : PRINT A$: VTAB 14: PRINT A$ : VTAB 13: PRINT "HOW MUCH WILL YOU DEPOSIT?";
+2010 REM VTAB 13 : PRINT A$: VTAB 14: PRINT A$ : VTAB 13: PRINT "HOW MUCH WILL YOU DEPOSIT?";
 2020 VTAB 13 : PRINT A$: VTAB 14: PRINT A$: VTAB 15: PRINT A$ : VTAB 13: PRINT "BANK: " BANK: VTAB 14: PRINT "----------------------": VTAB 15: PRINT "HOW MUCH WILL YOU DEPOSIT?";
 2030 GOSUB 310
 2040 IF X$ = "A" THEN PRINT CHR$ (8);: INVERSE:PRINT "ALL"; : NORMAL: NUM = C
@@ -96,10 +89,7 @@ As MMBASIC has a number of flaws, with one of them being that you can't just pas
 2060 IF NUM <= C THEN BANK = BANK + NUM: C = C - NUM: GOSUB 130: GOTO 2100
 2070 GOSUB 760
 2100 REM WITHDRAW
-2110 REM VTAB 13 : HTAB 1
-2120 REM PRINT "HOW MUCH WILL YOU WITHDRAW?                                           "
-2120 REM PRINT "HOW MUCH WILL YOU WITHDRAW?"
-2120 VTAB 13 : PRINT A$: VTAB 14: PRINT A$ : VTAB 13: PRINT "HOW MUCH WILL YOU WITHDRAW?";
+2110 REM VTAB 13 : PRINT A$: VTAB 14: PRINT A$ : VTAB 13: PRINT "HOW MUCH WILL YOU WITHDRAW?";
 2120 VTAB 13 : PRINT A$: VTAB 14: PRINT A$: VTAB 15: PRINT A$ : VTAB 13: PRINT "BANK: " BANK: VTAB 14: PRINT "----------------------": VTAB 15: PRINT "HOW MUCH WILL YOU WITHDRAW?";
 2130 GOSUB 310
 2140 IF X$ = "A" THEN PRINT CHR$ (8);: INVERSE:PRINT "ALL"; : NORMAL: NUM = BANK
@@ -107,9 +97,14 @@ As MMBASIC has a number of flaws, with one of them being that you can't just pas
 2160 IF NUM <= BANK THEN BANK = BANK - NUM: C = C + NUM: GOSUB 130: GOTO 2190
 2170 GOSUB 760
 2190 RETURN: REM LEAVE BANK
-
-
 ```
+
+Notes:
+
+1. The bank balance is, by default, displayed *both* in the stats, at the top of the screen, *and* during a bank visit.
+2. The line pairs 2010/2020 and 2110/2120 are mutually exclusive. Un-`REM` 2010/2110 (and `REM` 2020/2120) if you do not want the bank balance displayed during the bank visit.
+3. Omit the hacked line 140, if you do ***not*** want to display the bank balance in the stats at the top of the screen - use the original line 140 instead.
+
 
 
 #### For MMBASIC
@@ -145,8 +140,7 @@ As MMBASIC has a number of flaws, with one of them being that you can't just pas
 
 2000 REM VISIT BANK ROUTINE (2000-2190)
 2005 REM DEPOSIT
-2010 REM VTAB 13: HTAB 1
-2020 PRINT @(0, 13*FONTY) A$: PRINT @(0, 14*FONTY) A$ : PRINT @(0, 13*FONTY) "HOW MUCH WILL YOU DEPOSIT?";
+2010 REM PRINT @(0, 13*FONTY) A$: PRINT @(0, 14*FONTY) A$ : PRINT @(0, 13*FONTY) "HOW MUCH WILL YOU DEPOSIT?";
 2020 PRINT @(0, 13*FONTY) A$: PRINT @(0, 14*FONTY) A$ : PRINT @(0, 15*FONTY) A$ :  PRINT @(0, 13*FONTY)"BANK: " BANK:  PRINT @(0, 14*FONTY)"----------------------":  PRINT @(0, 15*FONTY)"HOW MUCH WILL YOU DEPOSIT?";
 2030 GOSUB 310
 2040 IF KEY$ = "A" THEN PRINT CHR$ (8);: INVERSE:PRINT "ALL"; : NORMAL: NUM = C
@@ -154,8 +148,7 @@ As MMBASIC has a number of flaws, with one of them being that you can't just pas
 2060 IF NUM <= C THEN BANK = BANK + NUM: C = C - NUM: GOSUB 130: GOTO 2100
 2070 GOSUB 760
 2100 REM WITHDRAW
-2110 REM VTAB 13 : HTAB 1
-2120 PRINT @(0, 13*FONTY) A$: PRINT @(0, 14*FONTY) A$ : PRINT @(0, 13*FONTY) "HOW MUCH WILL YOU WITHDRAW?";
+2110 REM PRINT @(0, 13*FONTY) A$: PRINT @(0, 14*FONTY) A$ : PRINT @(0, 13*FONTY) "HOW MUCH WILL YOU WITHDRAW?";
 2120 PRINT @(0, 13*FONTY) A$: PRINT @(0, 14*FONTY) A$ : PRINT @(0, 15*FONTY) A$ :  PRINT @(0, 13*FONTY)"BANK: " BANK:  PRINT @(0, 14*FONTY)"----------------------":  PRINT @(0, 15*FONTY) "HOW MUCH WILL YOU WITHDRAW?";
 2130 GOSUB 310
 2140 IF KEY$ = "A" THEN PRINT CHR$ (8);: INVERSE:PRINT "ALL"; : NORMAL: NUM = BANK
@@ -164,6 +157,12 @@ As MMBASIC has a number of flaws, with one of them being that you can't just pas
 2170 GOSUB 760
 2190 RETURN: REM LEAVE BANK
 ```
+
+Notes:
+
+1. The bank balance is, by default, displayed *both* in the stats, at the top of the screen, *and* during a bank visit.
+2. The line pairs 2010/2020 and 2110/2120 are mutually exclusive. Un-`REM` 2010/2110 (and `REM` 2020/2120) if you do not want the bank balance displayed during the bank visit.
+3. Omit the hacked line 141, if you do ***not*** want to display the bank balance in the stats at the top of the screen - use the original line 141 instead.
 
 
 #### For BBC BASIC
@@ -217,6 +216,13 @@ As MMBASIC has a number of flaws, with one of them being that you can't just pas
 2170 GOSUB 760
 2190 RETURN: REM LEAVE BANK
 ```
+
+Notes:
+
+1. The bank balance is, by default, displayed *both* in the stats, at the top of the screen, *and* during a bank visit.
+2. The line pairs 2010/2020 and 2110/2120 are mutually exclusive. Un-`REM` 2010/2110 (and `REM` 2020/2120) if you do not want the bank balance displayed during the bank visit.
+3. Omit the hacked line 140, if you do ***not*** want to display the bank balance in the stats at the top of the screen - use the original line 140 instead.
+
 
 Related: [Notes pertaining to adding the Bank feature to the BBC BASIC version of Taipan][9]
 
