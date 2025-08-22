@@ -37,3 +37,5 @@ This reprository contains:
 - [BBCTaipan](https://github.com/greenonline/BBCTaipan)
 - [MacTaipan](https://github.com/greenonline/MacTaipan)
 - [MMBASICTaipan](https://github.com/greenonline/MMBASICTaipan)
+- [CommanderX16Taipan](https://github.com/greenonline/CommanderX16Taipan)
+
