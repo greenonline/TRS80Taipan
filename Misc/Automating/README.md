@@ -60,11 +60,11 @@ From Hong Kong to Liverpool.
 ```none
 835 KEY$="N":GOTO 841 : REM HACK
 ```
-### Non-Destructive (AS)
+#### Non-Destructive (AS)
 ```none
 835 X$="N":GOTO 841 : REM HACK
 ```
-### Non-Destructive (CX)
+#### Non-Destructive (CX)
 ```none
 836 GOTO 850 : REM HACK
 ```
@@ -153,7 +153,7 @@ This is the end, my friend.
 
 ## See also
 
- - [Cheats and Hacks - For MMBASIC, AppleSoft BASIC and BBC BASIC versions of Taipan.][1]
+ - [Cheats and Hacks - For X16BASIC, MMBASIC, AppleSoft BASIC and BBC BASIC versions of Taipan.][1]
 
 
 
