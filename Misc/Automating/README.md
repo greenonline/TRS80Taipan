@@ -15,9 +15,10 @@ Some of these are automation hacks, and some are downright cheats:
 
 The individual hacks are listed below, for each of the platforms that the 40 column version of Taipan has been ported to:
 
- - AppleSoft BASIC
- - BBCBASIC
- - MMBASIC
+ - AppleSoft BASIC (AS)
+ - BBCBASIC        (BB)
+ - MMBASIC         (MM)
+ - Commander X16   (CX)
 
 ## The hacks
 
@@ -25,12 +26,12 @@ Note: These are for the 40 column version of Taipan! For automation hacks of the
 
 ### Auto Embark
 
-#### Non-Destructive (MM, AS)
+#### Non-Destructive (MM, AS, CX)
 
 ```none
 369 GOTO 730 : REM HACK
 ```
-#### Destructive
+#### Destructive (MM, AS, CX)
 ```none
 370 GOTO 730 : REM HACK
 ```
@@ -38,19 +39,19 @@ Note: These are for the 40 column version of Taipan! For automation hacks of the
 
 From Hong Kong to Liverpool.
 
-#### Non-Destructive (MM, AS)
+#### Non-Destructive (MM, AS, CX)
 
 ```none
 745 PO=ABS(9-L):GOTO 980 : REM HACK
 ```
 
 ### CHEAT: Always ride out the storm
-#### Non-Destructive (MM, AS)
+#### Non-Destructive (MM, AS, CX)
 ```none
 995 GOTO 1020 : REM HACK
 ```
 ### CHEAT: Pirates never attack
-#### Non-Destructive (MM, AS)
+#### Non-Destructive (MM, AS, CX)
 ```none
 1035 GOTO 1290 : REM HACK
 ```
@@ -63,12 +64,20 @@ From Hong Kong to Liverpool.
 ```none
 835 X$="N":GOTO 841 : REM HACK
 ```
+### Non-Destructive (CX)
+```none
+836 GOTO 850 : REM HACK
+```
+or better still,
+```none
+836 X$="N": GOTO 846 : REM HACK
+```
 ### Leave trading automatically
 #### Non-Destructive (MM)
 ```none
 236 KEY$="L":GOTO 242 : REM HACK
 ```
-#### Non-Destructive (AS)
+#### Non-Destructive (AS, CX)
 ```none
 236 X$="L":GOTO 242 : REM HACK
 ```
@@ -86,6 +95,10 @@ Better this which skips the GOSUB 590:
 #### Non-Destructive (AS)
 ```none
 49 FOR I = 0 TO 9:READ LO(I):NEXT I:D = 1000: Y=1860: GT = 1: C=400:MW = 50:SH = MW:SR = 1: G=1:V(0) = 1: GOSUB 5000: X$ ="": HOME:GOTO 120: REM HACK
+```
+#### Non-Destructive (CX)
+```none
+52 GOSUB 5000: X$ ="":GOTO 120: REM HACK
 ```
 ### CHEAT: Start with no debt
 
