@@ -21,7 +21,7 @@ The individual hacks are listed below, for each of the platforms that the 40 col
 
 ## The hacks
 
-Note: These are for the 40 column version of Taipan! For automation hacks of the Hi-Res version, please see the poorly named repository: TRS80Taipan and the file `script_issues.txt`.
+Note: These are for the 40 column version of Taipan! For automation hacks of the Hi-Res version, please see the poorly named repository: [TRS80Taipan](https://github.com/greenonline/TRS80Taipan) and the file [`script_issues.txt`](https://github.com/greenonline/TRS80Taipan/blob/main/Listings/TRS80%20Taipan%20script%20issues.txt).
 
 ### Auto Embark
 
