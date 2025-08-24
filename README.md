@@ -1,4 +1,12 @@
-# !!!NOT!!! TRS80Taipan
+# !!!NOT (*yet*)!!! TRS80Taipan
+## TRS80 version of Taipan
+
+This *will* have the original 40 column Taipan code for the TRS80 - from whence came the  version of the Apple II<sup>1</sup> - when I can locate it and have played about with it. 
+
+While we wait for that to materialise, instead the repo contains a deconstruction of the Hi-Res version of Taipan, for the Apple II, and some other Taipan related "stuff"...
+
+<sup>1</sup> Evidence of this is in the source code in the book, on page XX. See [this answer](https://retrocomputing.stackexchange.com/a/28132/202) to [Looking for an accurate Apple II(e) character set - in particular, what is CHR$(133)?](https://retrocomputing.stackexchange.com/q/28127/202) for more details.
+
 ## Hi-Res Apple II version of Taipan
 ### An analysis
 
