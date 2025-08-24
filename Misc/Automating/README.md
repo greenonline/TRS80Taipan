@@ -15,10 +15,10 @@ Some of these are automation hacks, and some are downright cheats:
 
 The individual hacks are listed below, for each of the platforms that the 40 column version of Taipan has been ported to:
 
- - AppleSoft BASIC (AS)
- - BBCBASIC        (BB)
- - MMBASIC         (MM)
- - Commander X16   (CX)
+ - [AppleSoft BASIC](https://github.com/greenonline/Taipan_40_Column_Apple_II) (AS)
+ - [BBCBASIC](https://github.com/greenonline/BBCTaipan)        (BB)
+ - [MMBASIC](https://github.com/greenonline/CommanderMMBASICTaipan)         (MM)
+ - [Commander X16](https://github.com/greenonline/CommanderX16Taipan)   (CX)
 
 ## The hacks
 
@@ -150,6 +150,16 @@ Or add the line
 4 MAXINT=1E38
 ```
 This is the end, my friend.
+
+## Related repos
+
+ - [!!!NOT!!! TRS80Taipan](https://github.com/greenonline/TRS80Taipan)
+ - [MMBASICTaipan](https://github.com/greenonline/MMBASICTaipan)
+ - [MacTaipan](https://github.com/greenonline/MacTaipan)
+ - [Taipan_40_Column_Apple_II](https://github.com/greenonline/Taipan_40_Column_Apple_II)
+ - [BBCTaipan](https://github.com/greenonline/BBCTaipan)
+ - [CommanderX16Taipan]()
+
 
 ## See also
 
